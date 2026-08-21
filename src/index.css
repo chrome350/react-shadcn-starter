@@ -42,8 +42,8 @@
 }
 
 * { box-sizing: border-box; border-color: var(--border); }
-html { background: #1d1d1d; }
-body { margin: 0; min-width: 360px; min-height: 100vh; background: #1d1d1d; }
+html { background: #fff; }
+body { margin: 0; min-width: 360px; min-height: 100vh; background: #fff; }
 button { font: inherit; -webkit-tap-highlight-color: transparent; }
 
 #root {
@@ -54,43 +54,13 @@ button { font: inherit; -webkit-tap-highlight-color: transparent; }
 
 .phone-shell {
   position: relative;
-  width: clamp(360px, 100vw, 440px);
-  height: max(100svh, 803px);
-  min-height: 803px;
+  width: 100%;
+  height: 100svh;
+  min-height: 640px;
   overflow: hidden;
   color: #101012;
   background: #fff;
-  border: 5px solid #050505;
-  border-radius: 58px;
 }
-
-.status-bar {
-  height: 61px;
-  padding: 24px 28px 0 37px;
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  font-size: 18px;
-  font-weight: 650;
-  letter-spacing: -0.4px;
-}
-
-.status-icons {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  color: #0b0b0c;
-}
-
-.status-icons > svg { width: 19px; height: 19px; stroke-width: 3; }
-.status-icons .battery { width: 25px; height: 18px; stroke-width: 1.7; }
-
-.cellular { height: 16px; display: flex; align-items: flex-end; gap: 2px; }
-.cellular i { width: 3px; border-radius: 2px; background: currentColor; }
-.cellular i:nth-child(1) { height: 5px; }
-.cellular i:nth-child(2) { height: 8px; }
-.cellular i:nth-child(3) { height: 11px; }
-.cellular i:nth-child(4) { height: 15px; }
 
 .calendar-header {
   height: 126px;
@@ -166,7 +136,7 @@ button { font: inherit; -webkit-tap-highlight-color: transparent; }
   display: grid;
   place-items: center;
   border-radius: 50%;
-  font-size: 20px;
+  font-size: 19px;
   line-height: 1;
   font-weight: 400;
 }
@@ -203,9 +173,21 @@ button { font: inherit; -webkit-tap-highlight-color: transparent; }
 
 .schedule {
   position: relative;
-  height: calc(100% - 187px);
-  overflow: hidden;
+  height: calc(100svh - 126px);
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
   background: white;
+}
+
+.schedule::-webkit-scrollbar { display: none; }
+
+.schedule-grid {
+  position: relative;
+  height: calc(20px + 15 * var(--hour-height));
+  min-height: calc(20px + 15 * var(--hour-height));
 }
 
 .hour-row {
@@ -398,10 +380,6 @@ button { font: inherit; -webkit-tap-highlight-color: transparent; }
   .appointment { right: 13px; }
   .break-card { right: 5px; }
   .hour-row { right: 13px; }
-}
-
-@media (max-height: 802px) {
-  .phone-shell { height: 803px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -1,12 +1,10 @@
 import {
-  BatteryFull,
   CalendarClock,
   CalendarDays,
   CheckCircle2,
   ChevronRight,
   Inbox,
   Plus,
-  Wifi,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
@@ -20,7 +18,10 @@ const week = [
   { weekday: "В", date: "3", state: "weekend" },
 ]
 
-const hours = ["10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00"]
+const hours = [
+  "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00",
+  "17:00", "18:00", "19:00", "20:00", "21:00", "22:00", "23:00", "00:00",
+]
 
 type AppointmentProps = {
   className: string
@@ -58,24 +59,9 @@ function BreakCard() {
   )
 }
 
-function StatusBar() {
-  return (
-    <div className="status-bar" aria-label="Строка состояния">
-      <time>10:15</time>
-      <div className="status-icons" aria-hidden="true">
-        <span className="cellular"><i /><i /><i /><i /></span>
-        <Wifi />
-        <BatteryFull className="battery" />
-      </div>
-    </div>
-  )
-}
-
 export function App() {
   return (
     <main className="phone-shell">
-      <StatusBar />
-
       <section className="calendar-header" aria-label="Календарь на сентябрь">
         <div className="month-row">
           <h1>Сентябрь</h1>
@@ -106,30 +92,32 @@ export function App() {
       </section>
 
       <section className="schedule" aria-label="Расписание на 27 сентября">
-        {hours.map((hour, index) => (
-          <div className="hour-row" style={{ top: `calc(20px + ${index} * var(--hour-height))` }} key={hour}>
-            <time>{hour}</time>
+        <div className="schedule-grid">
+          {hours.map((hour, index) => (
+            <div className="hour-row" style={{ top: `calc(20px + ${index} * var(--hour-height))` }} key={hour}>
+              <time>{hour}</time>
+              <span />
+            </div>
+          ))}
+
+          <div className="current-time" aria-label="Текущее время 10:15">
+            <time>10:15</time>
             <span />
           </div>
-        ))}
 
-        <div className="current-time" aria-label="Текущее время 10:15">
-          <time>10:15</time>
-          <span />
+          <Appointment
+            className="event-one"
+            duration="11:00–12:00 · 1 час · 7 500 ₽"
+            note="Хочет веселый летний дизайн, обещала показать референсы"
+          />
+          <Appointment className="event-two" compact />
+          <Appointment
+            className="event-three"
+            duration="13:00–14:30 · 1 час 30 минут · 7 500 ₽"
+            note="Хочет веселый летний дизайн, обещала показать референсы"
+          />
+          <BreakCard />
         </div>
-
-        <Appointment
-          className="event-one"
-          duration="11:00–12:00 · 1 час · 7 500 ₽"
-          note="Хочет веселый летний дизайн, обещала показать референсы"
-        />
-        <Appointment className="event-two" compact />
-        <Appointment
-          className="event-three"
-          duration="13:00–14:30 · 1 час 30 минут · 7 500 ₽"
-          note="Хочет веселый летний дизайн, обещала показать референсы"
-        />
-        <BreakCard />
       </section>
 
       <nav className="bottom-nav" aria-label="Основная навигация">
