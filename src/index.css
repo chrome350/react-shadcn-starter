@@ -21,7 +21,7 @@
   --accent-foreground: #171419;
   --border: #e8e5e9;
   --ring: #c36bfa;
-  --hour-height: 86px;
+  --hour-height: 90px;
 }
 
 @theme inline {
@@ -320,14 +320,14 @@ button { font: inherit; -webkit-tap-highlight-color: transparent; }
 .appointment__note { margin-top: 8px !important; color: #967ca5; font-style: italic; }
 .appointment--compact { padding-top: 5px; }
 
-.event-one { top: 108px; height: 82px; }
-.event-two { top: 194px; height: 42px; }
-.event-three { top: 280px; height: 126px; }
-.tuesday-event-one { top: 108px; height: 168px; }
-.tuesday-event-two { top: 366px; height: 42px; }
+.event-one { top: 110px; height: 86px; }
+.event-two { top: 200px; height: 42px; }
+.event-three { top: 290px; height: 131px; }
+.tuesday-event-one { top: 110px; height: 176px; }
+.tuesday-event-two { top: 380px; height: 42px; }
 
 .break-card {
-  top: 452px;
+  top: 470px;
   right: 2px;
   height: 84px;
   color: #813b3c;
@@ -381,6 +381,171 @@ button { font: inherit; -webkit-tap-highlight-color: transparent; }
   color: #b99afc;
   background: #33284e;
 }
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.drawer-overlay {
+  position: fixed;
+  z-index: 30;
+  inset: 0;
+  background: rgba(16, 16, 18, 0.38);
+  animation: drawer-fade-in 180ms ease-out;
+}
+
+.drawer-content {
+  position: fixed;
+  z-index: 31;
+  left: 50%;
+  bottom: 0;
+  width: min(100%, 440px);
+  height: calc(100svh - 8px);
+  padding: 25px 18px 24px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  transform: translateX(-50%);
+  border-radius: 28px 28px 0 0;
+  color: #171719;
+  background: #fff;
+  outline: none;
+  scrollbar-width: none;
+  animation: drawer-slide-up 260ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.drawer-content::-webkit-scrollbar { display: none; }
+
+.drawer-handle {
+  position: absolute;
+  top: 4px;
+  left: 50%;
+  width: 34px;
+  height: 10px;
+  transform: translateX(-50%);
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.drawer-handle::before,
+.drawer-handle span {
+  content: "";
+  position: absolute;
+  left: 0;
+  width: 34px;
+  height: 3px;
+  border-radius: 999px;
+}
+
+.drawer-handle::before { top: 0; background: #c9c7ca; }
+.drawer-handle span { top: 8px; background: #ff22bc; }
+
+.drawer-header > span {
+  display: block;
+  color: #ca65fa;
+  font-size: 12px;
+  line-height: 1;
+  font-weight: 700;
+}
+
+.drawer-header h2 {
+  margin: 7px 0 18px;
+  font-size: 27px;
+  line-height: 1;
+  font-weight: 700;
+  letter-spacing: -0.7px;
+}
+
+.drawer-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.stat-card {
+  min-width: 0;
+  height: 158px;
+  padding: 20px 18px;
+  border-radius: 25px;
+  background: #f3f2f4;
+}
+
+.stat-card > span { color: #7d797f; font-size: 14px; }
+.stat-card strong { display: block; margin-top: 15px; font-size: 21px; line-height: 1; }
+.stat-card small { display: block; margin-top: 4px; font-size: 13px; }
+.stat-card p { margin: 21px 0 4px; font-size: 12px; }
+.stat-card b { font-weight: 500; }
+.load-good { color: #00b957; }
+.load-low { color: #ff173d; }
+
+.progress-track { height: 6px; overflow: hidden; border-radius: 999px; background: #e7e5e8; }
+.progress-track i { display: block; height: 100%; border-radius: inherit; }
+.progress-good { width: 80%; background: #00c85a; }
+.progress-low { width: 28%; background: #ff173d; }
+
+.important-list { margin-top: 26px; }
+.important-list h2 { margin: 0 0 13px 6px; color: #713cff; font-size: 20px; }
+.important-list button {
+  width: 100%;
+  height: 48px;
+  padding: 0 4px;
+  display: grid;
+  grid-template-columns: 25px 1fr 18px;
+  align-items: center;
+  gap: 8px;
+  border: 0;
+  border-bottom: 1px solid #e7e5e8;
+  color: #232025;
+  background: transparent;
+  text-align: left;
+  font-size: 16px;
+}
+
+.important-list button > svg:first-child { width: 23px; height: 23px; padding: 5px; border-radius: 50%; color: #fff; fill: #fff; background: #8150ff; }
+.important-list button > svg:last-child { width: 17px; color: #d1ced3; }
+.important-list mark,
+.advice-card mark { padding: 1px 4px; border-radius: 4px; color: #7c35ee; background: #efe3ff; }
+
+.drawer-feed { margin-top: 28px; display: grid; gap: 15px; }
+.advice-card { position: relative; padding: 17px 18px 20px 49px; border-radius: 24px; background: #f4f3f5; }
+.advice-card__title { min-height: 26px; display: flex; align-items: center; gap: 10px; }
+.advice-card__title > svg { position: absolute; top: 19px; left: 18px; width: 20px; color: #ffc936; fill: #fff6c9; }
+.advice-card__title strong { font-size: 16px; }
+.advice-card__title button { width: 28px; height: 28px; margin-left: auto; border-radius: 50%; color: #8d8990; background: #dddce0; }
+.advice-card__title button svg { width: 17px; }
+.advice-card p { margin: 7px 0 0; font-size: 16px; line-height: 1.27; }
+
+.video-preview {
+  position: relative;
+  height: 166px;
+  margin-top: 15px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #111114;
+}
+
+.video-preview img { width: 94px; height: 142px; object-fit: cover; opacity: 0.58; }
+.video-preview span { position: absolute; width: 50px; height: 50px; display: grid; place-items: center; border-radius: 50%; color: white; background: #f51238; }
+.video-preview span svg { width: 25px; fill: white; }
+
+.promo-card { min-height: 470px; padding: 29px 26px 20px; overflow: hidden; border-radius: 25px; background: #f8f4e6; }
+.promo-card h2 { margin: 0; font-size: 27px; line-height: 1.1; letter-spacing: -0.8px; }
+.promo-card h2 u { text-decoration-color: #c948ff; text-decoration-thickness: 5px; text-underline-offset: -2px; }
+.promo-card p { margin: 8px 0 0; color: #88827b; font-size: 17px; }
+.promo-illustration { width: 100%; height: auto; margin-top: 25px; fill: none; stroke: #0c0c0e; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+
+@keyframes drawer-fade-in { from { opacity: 0; } }
+@keyframes drawer-slide-up { from { transform: translate(-50%, 100%); } }
 
 .bottom-nav {
   position: absolute;
