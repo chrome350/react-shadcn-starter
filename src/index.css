@@ -81,7 +81,13 @@ button { font: inherit; -webkit-tap-highlight-color: transparent; }
   align-items: center;
 }
 
-.month-row h1 {
+.month-title {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.month-title h1 {
   margin: 0;
   font-size: 24px;
   line-height: 1;
@@ -89,10 +95,9 @@ button { font: inherit; -webkit-tap-highlight-color: transparent; }
   letter-spacing: -0.8px;
 }
 
-.month-row > svg {
+.month-title > svg {
   width: 19px;
   height: 19px;
-  margin-left: 2px;
   color: #d2d0d3;
   stroke-width: 3;
 }

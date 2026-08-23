@@ -96,8 +96,10 @@ export function App() {
     <main className="phone-shell">
       <section className="calendar-header" aria-label={`Календарь на ${monthTitle}`}>
         <div className="month-row">
-          <h1>{monthTitle[0].toUpperCase() + monthTitle.slice(1)}</h1>
-          <ChevronRight aria-hidden="true" />
+          <div className="month-title">
+            <h1>{monthTitle[0].toUpperCase() + monthTitle.slice(1)}</h1>
+            <ChevronRight aria-hidden="true" />
+          </div>
           {!isToday && (
             <Button variant="ghost" className="today-button" type="button" onClick={() => setSelectedDay(todayKey)}>
               Сегодня
