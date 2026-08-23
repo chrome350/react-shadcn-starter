@@ -1,4 +1,10 @@
-import { useState } from "react"
+import {
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+  type PointerEvent as ReactPointerEvent,
+} from "react"
 import * as Dialog from "@radix-ui/react-dialog"
 import {
   CalendarClock,
@@ -86,11 +92,78 @@ function BreakCard() {
 }
 
 function ConfirmationDrawer({ selectedDate }: { selectedDate: Date }) {
+  const [open, setOpen] = useState(false)
+  const [dragOffset, setDragOffset] = useState(0)
+  const [isDragging, setIsDragging] = useState(false)
+  const dragStart = useRef(0)
+  const dragStartedAt = useRef(0)
+  const dragOffsetRef = useRef(0)
+  const isDraggingRef = useRef(false)
   const weekday = new Intl.DateTimeFormat("ru-RU", { weekday: "long" }).format(selectedDate).toUpperCase()
   const date = new Intl.DateTimeFormat("ru-RU", { day: "numeric", month: "long" }).format(selectedDate)
 
+  const resetDrag = () => {
+    dragOffsetRef.current = 0
+    isDraggingRef.current = false
+    setDragOffset(0)
+    setIsDragging(false)
+  }
+
+  const handleOpenChange = (nextOpen: boolean) => {
+    if (!nextOpen) resetDrag()
+    setOpen(nextOpen)
+  }
+
+  const handleDragStart = (event: ReactPointerEvent<HTMLDivElement>) => {
+    dragStart.current = event.clientY
+    dragStartedAt.current = performance.now()
+    dragOffsetRef.current = 0
+    isDraggingRef.current = true
+    setIsDragging(true)
+    event.preventDefault()
+  }
+
+  useEffect(() => {
+    const handlePointerMove = (event: PointerEvent) => {
+      if (!isDraggingRef.current) return
+      const nextOffset = Math.max(0, event.clientY - dragStart.current)
+      dragOffsetRef.current = nextOffset
+      setDragOffset(nextOffset)
+    }
+
+    const handlePointerEnd = () => {
+      if (!isDraggingRef.current) return
+      const elapsed = performance.now() - dragStartedAt.current
+      const shouldClose = dragOffsetRef.current >= 96 || (dragOffsetRef.current >= 42 && elapsed < 260)
+
+      isDraggingRef.current = false
+      setIsDragging(false)
+      if (shouldClose) {
+        setDragOffset(window.innerHeight)
+        window.setTimeout(() => {
+          setOpen(false)
+          dragOffsetRef.current = 0
+          setDragOffset(0)
+        }, 180)
+        return
+      }
+
+      dragOffsetRef.current = 0
+      setDragOffset(0)
+    }
+
+    window.addEventListener("pointermove", handlePointerMove)
+    window.addEventListener("pointerup", handlePointerEnd)
+    window.addEventListener("pointercancel", handlePointerEnd)
+    return () => {
+      window.removeEventListener("pointermove", handlePointerMove)
+      window.removeEventListener("pointerup", handlePointerEnd)
+      window.removeEventListener("pointercancel", handlePointerEnd)
+    }
+  }, [])
+
   return (
-    <Dialog.Root>
+    <Dialog.Root open={open} onOpenChange={handleOpenChange}>
       <Dialog.Trigger asChild>
         <Button className="confirm-button" type="button">
           <span className="confirm-button__icon"><Zap /></span>
@@ -101,8 +174,17 @@ function ConfirmationDrawer({ selectedDate }: { selectedDate: Date }) {
 
       <Dialog.Portal>
         <Dialog.Overlay className="drawer-overlay" />
-        <Dialog.Content className="drawer-content" onOpenAutoFocus={(event) => event.preventDefault()}>
-          <Dialog.Close className="drawer-handle" aria-label="Закрыть"><span /></Dialog.Close>
+        <Dialog.Content
+          className="drawer-content"
+          data-dragging={isDragging}
+          style={{ "--drawer-drag-y": `${dragOffset}px` } as CSSProperties}
+          onOpenAutoFocus={(event) => event.preventDefault()}
+        >
+          <div
+            className="drawer-handle"
+            aria-hidden="true"
+            onPointerDown={handleDragStart}
+          ><span /></div>
           <Dialog.Description className="sr-only">
             Сводка записей, важные уведомления и советы
           </Dialog.Description>
@@ -133,7 +215,7 @@ function ConfirmationDrawer({ selectedDate }: { selectedDate: Date }) {
             <h2 id="important-title">Важно!</h2>
             <button type="button"><Zap /><span>Подтвердите <mark>2 записи</mark></span><ChevronRight /></button>
             <button type="button"><Zap /><span>У вас <mark>2 новые</mark> записи</span><ChevronRight /></button>
-            <button type="button"><Zap /><span>Клиент <mark>ОТМЕНИЛ</mark> запись</span><ChevronRight /></button>
+            <button type="button"><Zap /><span>Клиент <mark>отменил</mark> запись</span><ChevronRight /></button>
           </section>
 
           <section className="drawer-feed" aria-label="Советы">
