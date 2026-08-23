@@ -10,15 +10,35 @@ import {
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
-const week = [
-  { weekday: "П", date: "27", day: "monday", label: "Понедельник, 27 сентября", dots: 3 },
-  { weekday: "В", date: "28", day: "tuesday", label: "Вторник, 28 сентября", dots: 1 },
-  { weekday: "С", date: "29" },
-  { weekday: "Ч", date: "30" },
-  { weekday: "П", date: "1" },
-  { weekday: "С", date: "2", state: "muted" },
-  { weekday: "В", date: "3", state: "weekend" },
-]
+const weekdayLetters = ["П", "В", "С", "Ч", "П", "С", "В"]
+
+function dateKey(date: Date) {
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, "0")
+  const day = String(date.getDate()).padStart(2, "0")
+  return `${year}-${month}-${day}`
+}
+
+function getCurrentWeek(today: Date) {
+  const dayFromMonday = today.getDay() === 0 ? 6 : today.getDay() - 1
+  const monday = new Date(today.getFullYear(), today.getMonth(), today.getDate() - dayFromMonday)
+
+  return weekdayLetters.map((weekday, index) => {
+    const date = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate() + index)
+    return {
+      weekday,
+      date,
+      key: dateKey(date),
+      label: new Intl.DateTimeFormat("ru-RU", {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+      }).format(date),
+      dots: index === 0 ? 3 : index === 1 ? 1 : 0,
+      state: index === 5 ? "muted" : index === 6 ? "weekend" : "default",
+    }
+  })
+}
 
 const hours = [
   "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00",
@@ -62,43 +82,55 @@ function BreakCard() {
 }
 
 export function App() {
-  const [selectedDay, setSelectedDay] = useState<"monday" | "tuesday">("tuesday")
+  const today = new Date()
+  const todayKey = dateKey(today)
+  const week = getCurrentWeek(today)
+  const [selectedDay, setSelectedDay] = useState(todayKey)
+  const selectedDayIndex = week.findIndex((day) => day.key === selectedDay)
+  const selectedDate = week[selectedDayIndex]?.date ?? today
+  const isToday = selectedDay === todayKey
+  const monthTitle = new Intl.DateTimeFormat("ru-RU", { month: "long" }).format(selectedDate)
+  const scheduleDate = new Intl.DateTimeFormat("ru-RU", { day: "numeric", month: "long" }).format(selectedDate)
 
   return (
     <main className="phone-shell">
-      <section className="calendar-header" aria-label="Календарь на сентябрь">
+      <section className="calendar-header" aria-label={`Календарь на ${monthTitle}`}>
         <div className="month-row">
-          <h1>Сентябрь</h1>
+          <h1>{monthTitle[0].toUpperCase() + monthTitle.slice(1)}</h1>
           <ChevronRight aria-hidden="true" />
-          <Button variant="ghost" className="today-button" type="button" onClick={() => setSelectedDay("monday")}>
-            Сегодня
-          </Button>
-          <Button variant="ghost" size="icon" className="history-button" aria-label="История записей">
+          {!isToday && (
+            <Button variant="ghost" className="today-button" type="button" onClick={() => setSelectedDay(todayKey)}>
+              Сегодня
+            </Button>
+          )}
+          <Button
+            variant="ghost"
+            size="icon"
+            className={`history-button ${isToday ? "history-button--only" : ""}`}
+            aria-label="История записей"
+          >
             <CalendarClock />
           </Button>
         </div>
 
         <div className="week-strip">
           {week.map((day) => {
-            const isSwitchable = day.day === "monday" || day.day === "tuesday"
-            const isActive = day.day === selectedDay
-            const state = isActive ? "active" : isSwitchable ? "progress" : day.state ?? "default"
+            const isActive = day.key === selectedDay
+            const state = isActive ? "active" : day.dots ? "progress" : day.state
 
             return (
               <Button
                 variant="ghost"
                 className={`week-day h-auto rounded-none px-0 py-0 week-day--${state}`}
-                key={day.date}
+                key={day.key}
                 type="button"
                 aria-label={day.label}
-                aria-pressed={isSwitchable ? isActive : undefined}
-                onClick={isSwitchable ? () => {
-                  if (day.day === "monday" || day.day === "tuesday") setSelectedDay(day.day)
-                } : undefined}
+                aria-pressed={isActive}
+                onClick={() => setSelectedDay(day.key)}
               >
                 <span className="weekday">{day.weekday}</span>
-                <span className="date-circle">{day.date}</span>
-                {day.dots && (
+                <span className="date-circle">{day.date.getDate()}</span>
+                {day.dots > 0 && (
                   <span className="day-dots" aria-hidden="true">
                     {Array.from({ length: 5 }, (_, index) => <i className={index < day.dots ? "is-filled" : ""} key={index} />)}
                   </span>
@@ -109,7 +141,7 @@ export function App() {
         </div>
       </section>
 
-      <section className="schedule" aria-label={`Расписание на ${selectedDay === "monday" ? "27" : "28"} сентября`}>
+      <section className="schedule" aria-label={`Расписание на ${scheduleDate}`}>
         <div className="schedule-grid">
           {hours.map((hour, index) => (
             <div className="hour-row" style={{ top: `calc(20px + ${index} * var(--hour-height))` }} key={hour}>
@@ -123,7 +155,7 @@ export function App() {
             <span />
           </div>
 
-          {selectedDay === "monday" ? (
+          {selectedDayIndex === 0 ? (
             <>
               <Appointment
                 className="event-one"
@@ -138,7 +170,7 @@ export function App() {
               />
               <BreakCard />
             </>
-          ) : (
+          ) : selectedDayIndex === 1 ? (
             <>
               <Appointment
                 className="tuesday-event-one"
@@ -147,11 +179,11 @@ export function App() {
               />
               <Appointment className="tuesday-event-two" compact />
             </>
-          )}
+          ) : null}
         </div>
       </section>
 
-      {selectedDay === "tuesday" && (
+      {selectedDayIndex === 1 && (
         <Button className="confirm-button" type="button">
           <span className="confirm-button__icon"><Zap /></span>
           <span>Подтвердите</span>
