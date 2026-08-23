@@ -94,11 +94,25 @@ button { font: inherit; -webkit-tap-highlight-color: transparent; }
   width: 40px;
   height: 40px;
   margin-top: -7px;
-  margin-left: auto;
+  margin-left: 7px;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.94);
   box-shadow: 0 9px 25px rgba(47, 42, 52, 0.11);
 }
+
+.today-button {
+  width: 88px;
+  height: 40px;
+  margin-top: -7px;
+  margin-left: auto;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 9px 25px rgba(47, 42, 52, 0.11);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.today-button:hover { background: #fff; }
 
 .history-button:hover { background: #fff; }
 .history-button svg { width: 23px !important; height: 23px !important; stroke-width: 2.4; }
@@ -126,6 +140,8 @@ button { font: inherit; -webkit-tap-highlight-color: transparent; }
   border: 0;
 }
 
+.week-day:focus-visible { outline: none; box-shadow: none; }
+
 .weekday { font-size: 12px; line-height: 17px; color: #777479; }
 
 .date-circle {
@@ -141,7 +157,7 @@ button { font: inherit; -webkit-tap-highlight-color: transparent; }
   font-weight: 400;
 }
 
-.week-day--selected .date-circle { color: white; background: #cf7df7; }
+.week-day--active .date-circle { color: white; background: #101012; }
 .week-day--muted .date-circle { color: #7b787d; }
 .week-day--weekend .date-circle { color: #737075; background: #f3f2f4; }
 
@@ -296,6 +312,8 @@ button { font: inherit; -webkit-tap-highlight-color: transparent; }
 .event-one { top: 108px; height: 82px; }
 .event-two { top: 194px; height: 42px; }
 .event-three { top: 280px; height: 126px; }
+.tuesday-event-one { top: 108px; height: 168px; }
+.tuesday-event-two { top: 366px; height: 42px; }
 
 .break-card {
   top: 452px;
@@ -308,6 +326,50 @@ button { font: inherit; -webkit-tap-highlight-color: transparent; }
 .break-card .appointment__stripe { background: #ff6571; }
 .break-card .appointment__meta { color: #a76e70; }
 .break-card .appointment__note { color: #ae7779; }
+
+.confirm-button {
+  position: absolute;
+  z-index: 11;
+  left: 50%;
+  bottom: 94px;
+  width: auto;
+  height: 48px;
+  padding: 0 10px 0 7px;
+  transform: translateX(-50%);
+  gap: 7px;
+  border-radius: 999px;
+  color: white;
+  background: #101012;
+  box-shadow: 0 10px 30px rgba(17, 17, 20, 0.17);
+  font-size: 15px;
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+.confirm-button:hover { background: #101012; }
+
+.confirm-button__icon {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #7c43f4;
+}
+
+.confirm-button__icon svg {
+  width: 17px;
+  height: 17px;
+  fill: white;
+  stroke: white;
+}
+
+.confirm-button__count {
+  padding: 3px 5px;
+  border-radius: 6px;
+  color: #b99afc;
+  background: #33284e;
+}
 
 .bottom-nav {
   position: absolute;

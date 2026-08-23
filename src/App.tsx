@@ -1,3 +1,4 @@
+import { useState } from "react"
 import {
   CalendarClock,
   CalendarDays,
@@ -5,12 +6,13 @@ import {
   ChevronRight,
   Inbox,
   Plus,
+  Zap,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 const week = [
-  { weekday: "П", date: "27", state: "selected", dots: 3 },
-  { weekday: "В", date: "28", state: "progress", dots: 1 },
+  { weekday: "П", date: "27", day: "monday", label: "Понедельник, 27 сентября", dots: 3 },
+  { weekday: "В", date: "28", day: "tuesday", label: "Вторник, 28 сентября", dots: 1 },
   { weekday: "С", date: "29" },
   { weekday: "Ч", date: "30" },
   { weekday: "П", date: "1" },
@@ -60,38 +62,54 @@ function BreakCard() {
 }
 
 export function App() {
+  const [selectedDay, setSelectedDay] = useState<"monday" | "tuesday">("tuesday")
+
   return (
     <main className="phone-shell">
       <section className="calendar-header" aria-label="Календарь на сентябрь">
         <div className="month-row">
           <h1>Сентябрь</h1>
           <ChevronRight aria-hidden="true" />
+          <Button variant="ghost" className="today-button" type="button" onClick={() => setSelectedDay("monday")}>
+            Сегодня
+          </Button>
           <Button variant="ghost" size="icon" className="history-button" aria-label="История записей">
             <CalendarClock />
           </Button>
         </div>
 
         <div className="week-strip">
-          {week.map((day) => (
-            <Button
-              variant="ghost"
-              className={`week-day h-auto rounded-none px-0 py-0 week-day--${day.state ?? "default"}`}
-              key={day.date}
-              type="button"
-            >
-              <span className="weekday">{day.weekday}</span>
-              <span className="date-circle">{day.date}</span>
-              {day.dots && (
-                <span className="day-dots" aria-hidden="true">
-                  {Array.from({ length: 5 }, (_, index) => <i className={index < day.dots ? "is-filled" : ""} key={index} />)}
-                </span>
-              )}
-            </Button>
-          ))}
+          {week.map((day) => {
+            const isSwitchable = day.day === "monday" || day.day === "tuesday"
+            const isActive = day.day === selectedDay
+            const state = isActive ? "active" : isSwitchable ? "progress" : day.state ?? "default"
+
+            return (
+              <Button
+                variant="ghost"
+                className={`week-day h-auto rounded-none px-0 py-0 week-day--${state}`}
+                key={day.date}
+                type="button"
+                aria-label={day.label}
+                aria-pressed={isSwitchable ? isActive : undefined}
+                onClick={isSwitchable ? () => {
+                  if (day.day === "monday" || day.day === "tuesday") setSelectedDay(day.day)
+                } : undefined}
+              >
+                <span className="weekday">{day.weekday}</span>
+                <span className="date-circle">{day.date}</span>
+                {day.dots && (
+                  <span className="day-dots" aria-hidden="true">
+                    {Array.from({ length: 5 }, (_, index) => <i className={index < day.dots ? "is-filled" : ""} key={index} />)}
+                  </span>
+                )}
+              </Button>
+            )
+          })}
         </div>
       </section>
 
-      <section className="schedule" aria-label="Расписание на 27 сентября">
+      <section className="schedule" aria-label={`Расписание на ${selectedDay === "monday" ? "27" : "28"} сентября`}>
         <div className="schedule-grid">
           {hours.map((hour, index) => (
             <div className="hour-row" style={{ top: `calc(20px + ${index} * var(--hour-height))` }} key={hour}>
@@ -105,20 +123,41 @@ export function App() {
             <span />
           </div>
 
-          <Appointment
-            className="event-one"
-            duration="11:00–12:00 · 1 час · 7 500 ₽"
-            note="Хочет веселый летний дизайн, обещала показать референсы"
-          />
-          <Appointment className="event-two" compact />
-          <Appointment
-            className="event-three"
-            duration="13:00–14:30 · 1 час 30 минут · 7 500 ₽"
-            note="Хочет веселый летний дизайн, обещала показать референсы"
-          />
-          <BreakCard />
+          {selectedDay === "monday" ? (
+            <>
+              <Appointment
+                className="event-one"
+                duration="11:00–12:00 · 1 час · 7 500 ₽"
+                note="Хочет веселый летний дизайн, обещала показать референсы"
+              />
+              <Appointment className="event-two" compact />
+              <Appointment
+                className="event-three"
+                duration="13:00–14:30 · 1 час 30 минут · 7 500 ₽"
+                note="Хочет веселый летний дизайн, обещала показать референсы"
+              />
+              <BreakCard />
+            </>
+          ) : (
+            <>
+              <Appointment
+                className="tuesday-event-one"
+                duration="14:00–15:30 · 2 часа · 7 500 ₽"
+                note="Хочет веселый летний дизайн, обещала показать референсы"
+              />
+              <Appointment className="tuesday-event-two" compact />
+            </>
+          )}
         </div>
       </section>
+
+      {selectedDay === "tuesday" && (
+        <Button className="confirm-button" type="button">
+          <span className="confirm-button__icon"><Zap /></span>
+          <span>Подтвердите</span>
+          <span className="confirm-button__count">2 записи</span>
+        </Button>
+      )}
 
       <nav className="bottom-nav" aria-label="Основная навигация">
         <div className="bottom-nav__group">
