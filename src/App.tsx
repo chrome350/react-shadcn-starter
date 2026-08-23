@@ -1,11 +1,15 @@
 import { useState } from "react"
+import * as Dialog from "@radix-ui/react-dialog"
 import {
   CalendarClock,
   CalendarDays,
   CheckCircle2,
   ChevronRight,
   Inbox,
+  Lightbulb,
+  Play,
   Plus,
+  X,
   Zap,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -78,6 +82,89 @@ function BreakCard() {
       <p className="appointment__meta">15:00–16:00 · 1 час</p>
       <p className="appointment__note">Коментарий который оставил мастер</p>
     </article>
+  )
+}
+
+function ConfirmationDrawer({ selectedDate }: { selectedDate: Date }) {
+  const weekday = new Intl.DateTimeFormat("ru-RU", { weekday: "long" }).format(selectedDate).toUpperCase()
+  const date = new Intl.DateTimeFormat("ru-RU", { day: "numeric", month: "long" }).format(selectedDate)
+
+  return (
+    <Dialog.Root>
+      <Dialog.Trigger asChild>
+        <Button className="confirm-button" type="button">
+          <span className="confirm-button__icon"><Zap /></span>
+          <span>Подтвердите</span>
+          <span className="confirm-button__count">2 записи</span>
+        </Button>
+      </Dialog.Trigger>
+
+      <Dialog.Portal>
+        <Dialog.Overlay className="drawer-overlay" />
+        <Dialog.Content className="drawer-content" onOpenAutoFocus={(event) => event.preventDefault()}>
+          <Dialog.Close className="drawer-handle" aria-label="Закрыть"><span /></Dialog.Close>
+          <Dialog.Description className="sr-only">
+            Сводка записей, важные уведомления и советы
+          </Dialog.Description>
+
+          <header className="drawer-header">
+            <span>{weekday}</span>
+            <Dialog.Title>{date}</Dialog.Title>
+          </header>
+
+          <section className="drawer-stats" aria-label="Статистика записей">
+            <article className="stat-card">
+              <span>Сегодня</span>
+              <strong>5 записей</strong>
+              <small>6 990 ₽</small>
+              <p>Загрузка <b className="load-good">80%</b></p>
+              <div className="progress-track"><i className="progress-good" /></div>
+            </article>
+            <article className="stat-card">
+              <span>Неделя</span>
+              <strong>15 записей</strong>
+              <small>46 990 ₽</small>
+              <p>Загрузка <b className="load-low">15%</b></p>
+              <div className="progress-track"><i className="progress-low" /></div>
+            </article>
+          </section>
+
+          <section className="important-list" aria-labelledby="important-title">
+            <h2 id="important-title">Важно!</h2>
+            <button type="button"><Zap /><span>Подтвердите <mark>2 записи</mark></span><ChevronRight /></button>
+            <button type="button"><Zap /><span>У вас <mark>2 новые</mark> записи</span><ChevronRight /></button>
+            <button type="button"><Zap /><span>Клиент <mark>ОТМЕНИЛ</mark> запись</span><ChevronRight /></button>
+          </section>
+
+          <section className="drawer-feed" aria-label="Советы">
+            <article className="advice-card">
+              <div className="advice-card__title"><Lightbulb /><strong>Совет</strong><Button variant="ghost" size="icon" aria-label="Скрыть совет"><X /></Button></div>
+              <p>Не забывайте настраивать ваше расписание <mark>Онлайн-записи</mark> чтобы клиенты могли к вам записаться</p>
+            </article>
+
+            <article className="advice-card advice-card--video">
+              <div className="advice-card__title"><Lightbulb /><strong>Совет</strong><Button variant="ghost" size="icon" aria-label="Скрыть совет"><X /></Button></div>
+              <p>Как настроить свою публичную страницу? Посмотрите короткое видео:</p>
+              <div className="video-preview" aria-label="Видео о публичной странице">
+                <img src="./avatar.png" alt="" />
+                <span><Play /></span>
+              </div>
+            </article>
+
+            <article className="promo-card">
+              <h2>Привлекайте новых<br />клиентов с <u>Авито</u></h2>
+              <p>Вау! А что так можно было?</p>
+              <svg className="promo-illustration" viewBox="0 0 280 210" aria-hidden="true">
+                <path d="M176 38c12-25 35-20 42-2 11-16 31-7 25 10 20-5 28 17 8 24 18 12 4 33-14 24-1 20-29 22-36 3-14 11-35-1-27-19-22-1-32-26-7-38 8-12 28-16 42-6Z" />
+                <path d="M151 79c-14 15-18 34-12 54l-24 41m40-76 34 35-14 55m-37-56 45 17m-75 25h81M95 183h103M119 75c-18 6-27 26-18 42m-18 65 12-43m-25 44h31" />
+                <circle cx="105" cy="65" r="17" />
+                <path d="M84 68c2-25 37-31 44-5M49 181h38v-59H55Zm12-59v-14h12v14" />
+              </svg>
+            </article>
+          </section>
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
   )
 }
 
@@ -186,11 +273,7 @@ export function App() {
       </section>
 
       {selectedDayIndex === 1 && (
-        <Button className="confirm-button" type="button">
-          <span className="confirm-button__icon"><Zap /></span>
-          <span>Подтвердите</span>
-          <span className="confirm-button__count">2 записи</span>
-        </Button>
+        <ConfirmationDrawer selectedDate={selectedDate} />
       )}
 
       <nav className="bottom-nav" aria-label="Основная навигация">
