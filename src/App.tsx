@@ -184,19 +184,21 @@ function AppointmentDetailsDrawer({ trigger }: { trigger: ReactElement }) {
           <div className="drawer-handle" aria-hidden="true" onPointerDown={handleDragStart} />
           <Dialog.Description className="sr-only">Подробная информация о записи клиента</Dialog.Description>
 
-          <header className="client-header">
-            <div>
-              <Dialog.Title>Ольга Будкова</Dialog.Title>
-              <a href="tel:+79262344523">8 (926) 234-45-23</a>
-              <p><CircleCheck />Клиент подтвердил запись</p>
-            </div>
-            <span className="client-avatar">ОБ</span>
-          </header>
+          <div className="appointment-summary">
+            <header className="client-header">
+              <div>
+                <Dialog.Title>Ольга Будкова</Dialog.Title>
+                <a href="tel:+79262344523">8 (926) 234-45-23</a>
+                <p><CircleCheck />Клиент подтвердил запись</p>
+              </div>
+              <span className="client-avatar">ОБ</span>
+            </header>
 
-          <section className="appointment-date" aria-label="Дата и время записи">
-            <p>Понедельник, 27 сентября</p>
-            <strong>16:00–16:45 · 45 минут</strong>
-          </section>
+            <section className="appointment-date" aria-label="Дата и время записи">
+              <p>Понедельник, 27 сентября</p>
+              <strong>16:00–16:45 · 45 минут</strong>
+            </section>
+          </div>
 
           <section className="services-card" aria-label="Услуги и стоимость">
             <span>2 услуги</span>
