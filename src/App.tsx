@@ -4,18 +4,22 @@ import {
   useState,
   type CSSProperties,
   type PointerEvent as ReactPointerEvent,
+  type ReactElement,
 } from "react"
 import * as Dialog from "@radix-ui/react-dialog"
 import {
   ArrowLeft,
   CalendarClock,
   CalendarDays,
+  CircleCheck,
   CheckCircle2,
   ChevronRight,
   Inbox,
   Lightbulb,
   Play,
+  Pencil,
   Plus,
+  Share,
   X,
   Zap,
 } from "lucide-react"
@@ -65,17 +69,21 @@ type AppointmentProps = {
 
 function Appointment({ className, compact, duration, note }: AppointmentProps) {
   return (
-    <article className={`appointment ${compact ? "appointment--compact" : ""} ${className}`}>
-      <span className="appointment__stripe" />
-      <div className="appointment__head">
-        <strong>Ангелина Петрова</strong>
-        <span className="status-pill">НОВЫЙ</span>
-        <CheckCircle2 className="status-check" aria-label="Подтверждено" />
-      </div>
-      <p>Маникюр, покрытие гель-лак, педикюр</p>
-      {duration && <p className="appointment__meta">{duration}</p>}
-      {note && <p className="appointment__note">{note}</p>}
-    </article>
+    <AppointmentDetailsDrawer
+      trigger={(
+        <article className={`appointment appointment--interactive ${compact ? "appointment--compact" : ""} ${className}`}>
+          <span className="appointment__stripe" />
+          <div className="appointment__head">
+            <strong>Ангелина Петрова</strong>
+            <span className="status-pill">НОВЫЙ</span>
+            <CheckCircle2 className="status-check" aria-label="Подтверждено" />
+          </div>
+          <p>Маникюр, покрытие гель-лак, педикюр</p>
+          {duration && <p className="appointment__meta">{duration}</p>}
+          {note && <p className="appointment__note">{note}</p>}
+        </article>
+      )}
+    />
   )
 }
 
@@ -89,6 +97,133 @@ function BreakCard() {
       <p className="appointment__meta">15:00–16:00 · 1 час</p>
       <p className="appointment__note">Коментарий который оставил мастер</p>
     </article>
+  )
+}
+
+function AppointmentDetailsDrawer({ trigger }: { trigger: ReactElement }) {
+  const [open, setOpen] = useState(false)
+  const [comment, setComment] = useState("")
+  const [dragOffset, setDragOffset] = useState(0)
+  const [isDragging, setIsDragging] = useState(false)
+  const dragStart = useRef(0)
+  const dragStartedAt = useRef(0)
+  const dragOffsetRef = useRef(0)
+  const isDraggingRef = useRef(false)
+
+  const resetDrag = () => {
+    dragOffsetRef.current = 0
+    isDraggingRef.current = false
+    setDragOffset(0)
+    setIsDragging(false)
+  }
+
+  const handleOpenChange = (nextOpen: boolean) => {
+    if (!nextOpen) resetDrag()
+    setOpen(nextOpen)
+  }
+
+  const handleDragStart = (event: ReactPointerEvent<HTMLDivElement>) => {
+    dragStart.current = event.clientY
+    dragStartedAt.current = performance.now()
+    dragOffsetRef.current = 0
+    isDraggingRef.current = true
+    setIsDragging(true)
+    event.preventDefault()
+  }
+
+  useEffect(() => {
+    const handlePointerMove = (event: PointerEvent) => {
+      if (!isDraggingRef.current) return
+      const nextOffset = Math.max(0, event.clientY - dragStart.current)
+      dragOffsetRef.current = nextOffset
+      setDragOffset(nextOffset)
+    }
+
+    const handlePointerEnd = () => {
+      if (!isDraggingRef.current) return
+      const elapsed = performance.now() - dragStartedAt.current
+      const shouldClose = dragOffsetRef.current >= 96 || (dragOffsetRef.current >= 42 && elapsed < 260)
+      isDraggingRef.current = false
+      setIsDragging(false)
+
+      if (shouldClose) {
+        setDragOffset(window.innerHeight)
+        window.setTimeout(() => {
+          setOpen(false)
+          dragOffsetRef.current = 0
+          setDragOffset(0)
+        }, 180)
+        return
+      }
+
+      dragOffsetRef.current = 0
+      setDragOffset(0)
+    }
+
+    window.addEventListener("pointermove", handlePointerMove)
+    window.addEventListener("pointerup", handlePointerEnd)
+    window.addEventListener("pointercancel", handlePointerEnd)
+    return () => {
+      window.removeEventListener("pointermove", handlePointerMove)
+      window.removeEventListener("pointerup", handlePointerEnd)
+      window.removeEventListener("pointercancel", handlePointerEnd)
+    }
+  }, [])
+
+  return (
+    <Dialog.Root open={open} onOpenChange={handleOpenChange}>
+      <Dialog.Trigger asChild>{trigger}</Dialog.Trigger>
+      <Dialog.Portal>
+        <Dialog.Overlay className="drawer-overlay" />
+        <Dialog.Content
+          className="drawer-content appointment-detail-drawer"
+          data-dragging={isDragging}
+          style={{ "--drawer-drag-y": `${dragOffset}px` } as CSSProperties}
+          onOpenAutoFocus={(event) => event.preventDefault()}
+        >
+          <div className="drawer-handle" aria-hidden="true" onPointerDown={handleDragStart} />
+          <Dialog.Description className="sr-only">Подробная информация о записи клиента</Dialog.Description>
+
+          <header className="client-header">
+            <div>
+              <Dialog.Title>Ольга Будкова</Dialog.Title>
+              <a href="tel:+79262344523">8 (926) 234-45-23</a>
+              <p><CircleCheck />Клиент подтвердил запись</p>
+            </div>
+            <span className="client-avatar">ОБ</span>
+          </header>
+
+          <section className="appointment-date" aria-label="Дата и время записи">
+            <p>Понедельник, 27 сентября</p>
+            <strong>16:00–16:45 · 45 минут</strong>
+          </section>
+
+          <section className="services-card" aria-label="Услуги и стоимость">
+            <span>2 услуги</span>
+            <p>Маникюр аппаратный</p>
+            <p>Снятие гель-лака</p>
+            <i />
+            <div><strong>Общая стоимость</strong><strong>3 500 ₽</strong></div>
+          </section>
+
+          <section className="comment-card" aria-label="Комментарий">
+            <textarea
+              maxLength={100}
+              placeholder="Ваш комментарий"
+              value={comment}
+              onChange={(event) => setComment(event.target.value)}
+            />
+            <span>{comment.length} из 100</span>
+          </section>
+
+          <div className="detail-actions">
+            <div><Button variant="ghost" size="icon" className="detail-action detail-action--cancel" aria-label="Отменить запись"><X /></Button><span>Отменить</span></div>
+            <div><Button variant="ghost" size="icon" className="detail-action" aria-label="Изменить запись"><Pencil /></Button><span>Изменить</span></div>
+            <div><Button variant="ghost" size="icon" className="detail-action" aria-label="Поделиться записью"><Share /></Button><span>Поделиться</span></div>
+          </div>
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
   )
 }
 
