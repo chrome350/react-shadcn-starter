@@ -465,11 +465,14 @@ button { font: inherit; -webkit-tap-highlight-color: transparent; }
 .client-header a { display: block; margin-top: 7px; color: #7f7a82; font-size: 17px; text-decoration: none; }
 .client-header p { margin: 6px 0 0; display: flex; align-items: center; gap: 6px; color: #7f7a82; font-size: 16px; }
 .client-header p svg { width: 16px; height: 16px; color: #00c853; fill: #00c853; stroke: #fff; }
+.client-header .appointment-status--pending svg { padding: 3px; border-radius: 50%; color: #fff; background: #807b83; fill: none; stroke: currentColor; }
+.client-header .appointment-status--canceled svg { color: #ff1238; fill: #ff1238; stroke: #fff; }
 .client-avatar { width: 54px; height: 54px; display: grid; place-items: center; flex: 0 0 auto; border: 2px solid #fff; border-radius: 50%; color: #fff; background: #9289b7; box-shadow: 0 2px 5px rgba(34, 29, 42, 0.2); font-size: 18px; }
 
 .appointment-date { margin-top: 24px; }
 .appointment-date p { margin: 0; font-size: 19px; line-height: 1.25; }
 .appointment-date strong { display: block; margin-top: 4px; font-size: 19px; line-height: 1.25; font-weight: 500; }
+.appointment-date--canceled { color: #bbb7bd; text-decoration: line-through; text-decoration-thickness: 1px; }
 
 .appointment-details-body { padding: 0 12px; }
 .services-card { margin-top: 22px; padding: 23px 18px 18px; border-radius: 26px; background: #fff; }
@@ -486,6 +489,7 @@ button { font: inherit; -webkit-tap-highlight-color: transparent; }
 .comment-card > span { position: absolute; right: 18px; bottom: 16px; color: #bbb8bd; font-size: 12px; }
 
 .detail-actions { margin-top: 18px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.detail-actions--single { grid-template-columns: 1fr; }
 .detail-actions > div { display: grid; justify-items: center; gap: 10px; color: #7b777e; font-size: 12px; }
 .detail-action { width: 64px; height: 64px; border-radius: 50%; color: #151418; background: #fff; box-shadow: 0 8px 22px rgba(46, 39, 54, 0.05); }
 .detail-action:hover { background: #fff; }
@@ -516,7 +520,6 @@ button { font: inherit; -webkit-tap-highlight-color: transparent; }
 
 .stat-card {
   min-width: 0;
-  height: 158px;
   padding: 20px 18px;
   border-radius: 25px;
   background: #f3f2f4;

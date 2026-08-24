@@ -11,6 +11,7 @@ import {
   ArrowLeft,
   CalendarClock,
   CalendarDays,
+  CircleMinus,
   CircleCheck,
   CheckCircle2,
   ChevronRight,
@@ -65,11 +66,15 @@ type AppointmentProps = {
   compact?: boolean
   duration?: string
   note?: string
+  status?: AppointmentStatus
 }
 
-function Appointment({ className, compact, duration, note }: AppointmentProps) {
+type AppointmentStatus = "confirmed" | "pending" | "canceled"
+
+function Appointment({ className, compact, duration, note, status = "confirmed" }: AppointmentProps) {
   return (
     <AppointmentDetailsDrawer
+      status={status}
       trigger={(
         <article className={`appointment appointment--interactive ${compact ? "appointment--compact" : ""} ${className}`}>
           <span className="appointment__stripe" />
@@ -100,7 +105,7 @@ function BreakCard() {
   )
 }
 
-function AppointmentDetailsDrawer({ trigger }: { trigger: ReactElement }) {
+function AppointmentDetailsDrawer({ trigger, status }: { trigger: ReactElement; status: AppointmentStatus }) {
   const [open, setOpen] = useState(false)
   const [comment, setComment] = useState("")
   const [dragOffset, setDragOffset] = useState(0)
@@ -109,6 +114,11 @@ function AppointmentDetailsDrawer({ trigger }: { trigger: ReactElement }) {
   const dragStartedAt = useRef(0)
   const dragOffsetRef = useRef(0)
   const isDraggingRef = useRef(false)
+  const statusContent = {
+    confirmed: { label: "Клиент подтвердил запись", icon: <CircleCheck /> },
+    pending: { label: "Ждём подтверждения клиента", icon: <Zap /> },
+    canceled: { label: "Клиент отменил запись", icon: <CircleMinus /> },
+  }[status]
 
   const resetDrag = () => {
     dragOffsetRef.current = 0
@@ -189,12 +199,14 @@ function AppointmentDetailsDrawer({ trigger }: { trigger: ReactElement }) {
               <div>
                 <Dialog.Title>Ольга Будкова</Dialog.Title>
                 <a href="tel:+79262344523">8 (926) 234-45-23</a>
-                <p><CircleCheck />Клиент подтвердил запись</p>
+                <p className={`appointment-status appointment-status--${status}`}>
+                  {statusContent.icon}{statusContent.label}
+                </p>
               </div>
               <span className="client-avatar">ОБ</span>
             </header>
 
-            <section className="appointment-date" aria-label="Дата и время записи">
+            <section className={`appointment-date ${status === "canceled" ? "appointment-date--canceled" : ""}`} aria-label="Дата и время записи">
               <p>Понедельник, 27 сентября</p>
               <strong>16:00–16:45 · 45 минут</strong>
             </section>
@@ -219,10 +231,10 @@ function AppointmentDetailsDrawer({ trigger }: { trigger: ReactElement }) {
               <span>{comment.length} из 100</span>
             </section>
 
-            <div className="detail-actions">
-              <div><Button variant="ghost" size="icon" className="detail-action detail-action--cancel" aria-label="Отменить запись"><X /></Button><span>Отменить</span></div>
-              <div><Button variant="ghost" size="icon" className="detail-action" aria-label="Изменить запись"><Pencil /></Button><span>Изменить</span></div>
-              <div><Button variant="ghost" size="icon" className="detail-action" aria-label="Поделиться записью"><Share /></Button><span>Поделиться</span></div>
+            <div className={`detail-actions ${status === "canceled" ? "detail-actions--single" : ""}`}>
+              <div><Button variant="ghost" size="icon" className="detail-action detail-action--cancel" aria-label={status === "canceled" ? "Удалить запись" : "Отменить запись"}><X /></Button><span>{status === "canceled" ? "Удалить" : "Отменить"}</span></div>
+              {status !== "canceled" && <div><Button variant="ghost" size="icon" className="detail-action" aria-label="Изменить запись"><Pencil /></Button><span>Изменить</span></div>}
+              {status !== "canceled" && <div><Button variant="ghost" size="icon" className="detail-action" aria-label="Поделиться записью"><Share /></Button><span>Поделиться</span></div>}
             </div>
           </div>
         </Dialog.Content>
@@ -640,11 +652,12 @@ export function App() {
                 duration="11:00–12:00 · 1 час · 7 500 ₽"
                 note="Хочет веселый летний дизайн, обещала показать референсы"
               />
-              <Appointment className="event-two" compact />
+              <Appointment className="event-two" compact status="pending" />
               <Appointment
                 className="event-three"
                 duration="13:00–14:30 · 1 час 30 минут · 7 500 ₽"
                 note="Хочет веселый летний дизайн, обещала показать референсы"
+                status="canceled"
               />
               <BreakCard />
             </>
@@ -654,8 +667,9 @@ export function App() {
                 className="tuesday-event-one"
                 duration="14:00–15:30 · 2 часа · 7 500 ₽"
                 note="Хочет веселый летний дизайн, обещала показать референсы"
+                status="pending"
               />
-              <Appointment className="tuesday-event-two" compact />
+              <Appointment className="tuesday-event-two" compact status="canceled" />
             </>
           ) : null}
         </div>
