@@ -128,8 +128,8 @@ button { font: inherit; -webkit-tap-highlight-color: transparent; }
 .history-button:hover { background: #fff; }
 .history-button svg {
   stroke-width: 2px;
-  width: 24px !important;
-  height: 24px !important;
+  width: 20px !important;
+  height: 20px !important;
 }
 .history-button--only { margin-left: auto; }
 
@@ -346,22 +346,22 @@ button { font: inherit; -webkit-tap-highlight-color: transparent; }
 .break-card .appointment__note { color: #ae7779; }
 
 .confirm-button {
-  position: absolute;
   z-index: 11;
-  left: 50%;
-  bottom: 94px;
-  width: auto;
-  height: 48px;
-  padding: 0 10px 0 7px;
-  transform: translateX(-50%);
-  gap: 7px;
-  border-radius: 999px;
-  color: white;
+  color: #fff;
+  white-space: nowrap;
   background: #101012;
-  box-shadow: 0 10px 30px rgba(17, 17, 20, 0.17);
+  border-radius: 999px;
+  gap: 7px;
+  width: auto;
+  height: 40px;
+  padding: 0 8px;
   font-size: 15px;
   font-weight: 400;
-  white-space: nowrap;
+  position: absolute;
+  bottom: 80px;
+  left: 50%;
+  transform: translate(-50%);
+  box-shadow: 0 10px 30px #1111142b;
 }
 
 .confirm-button:hover { background: #101012; }
@@ -376,10 +376,10 @@ button { font: inherit; -webkit-tap-highlight-color: transparent; }
 }
 
 .confirm-button__icon svg {
-  width: 17px;
-  height: 17px;
-  fill: white;
-  stroke: white;
+  fill: #fff;
+  stroke: #fff;
+  width: 14px;
+  height: 14px;
 }
 
 .confirm-button__count {
@@ -528,9 +528,6 @@ button { font: inherit; -webkit-tap-highlight-color: transparent; }
   letter-spacing: -0.7px;
 }
 
-.inbox-drawer__header h2 { margin-top: 8px; }
-.inbox-records { display: grid; gap: 7px; margin-top: 18px; }
-
 .drawer-stats {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -576,7 +573,7 @@ button { font: inherit; -webkit-tap-highlight-color: transparent; }
 
 .important-list button:last-child { border-bottom: 0; }
 
-.important-list button > svg:first-child { width: 23px; height: 23px; padding: 5px; border-radius: 50%; color: #fff; fill: #fff; background: #8150ff; }
+.important-list button > svg:first-child { color: #fff; fill: #fff; background: #8150ff; border-radius: 50%; width: 24px; height: 24px; padding: 6px; }
 .important-list button > svg:last-child { width: 17px; color: #d1ced3; }
 .important-list mark,
 .advice-card mark { padding: 1px 4px; border-radius: 4px; color: #7c35ee; background: #efe3ff; }
@@ -766,16 +763,16 @@ button { font: inherit; -webkit-tap-highlight-color: transparent; }
 @keyframes drawer-slide-up { from { transform: translate(-50%, 100%); } }
 
 .bottom-nav {
-  position: absolute;
   z-index: 10;
-  left: 13px;
-  right: 15px;
-  bottom: 32px;
-  height: 56px;
-  display: flex;
+  pointer-events: none;
   align-items: center;
   gap: 6px;
-  pointer-events: none;
+  height: 56px;
+  display: flex;
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  right: 12px;
 }
 
 .bottom-nav button { pointer-events: auto; }
