@@ -11,6 +11,7 @@ import {
   ArrowLeft,
   CalendarClock,
   Calendar as CalendarIcon,
+  Clock2,
   CircleMinus,
   CircleCheck,
   CheckCircle2,
@@ -117,7 +118,7 @@ function AppointmentDetailsDrawer({ trigger, status }: { trigger: ReactElement; 
   const isDraggingRef = useRef(false)
   const statusContent = {
     confirmed: { label: "Клиент подтвердил запись", icon: <CircleCheck /> },
-    pending: { label: "Ждём подтверждения клиента", icon: <Zap /> },
+    pending: { label: "Ждём подтверждения клиента", icon: <Clock2 /> },
     new: { label: "Новая запись", icon: <Plus /> },
     canceled: { label: "Клиент отменил запись", icon: <CircleMinus /> },
   }[status]
@@ -409,123 +410,7 @@ function CanceledAppointments({ onBack }: { onBack: () => void }) {
   )
 }
 
-const inboxAppointments = [
-  { id: "inbox-angelina", name: "Ангелина Петрова", time: "Сегодня, 16:00–17:00", status: "ЖДЁТ" },
-  { id: "inbox-olga", name: "Ольга Будкова", time: "Сегодня, 17:00–18:00", status: "НОВЫЙ" },
-  { id: "inbox-alexandra", name: "Александра Алексашенкова", time: "1 октября, 09:00–11:00", status: "НОВЫЙ" },
-]
-
-function InboxDrawer() {
-  const [open, setOpen] = useState(false)
-  const [dragOffset, setDragOffset] = useState(0)
-  const [isDragging, setIsDragging] = useState(false)
-  const dragStart = useRef(0)
-  const dragStartedAt = useRef(0)
-  const dragOffsetRef = useRef(0)
-  const isDraggingRef = useRef(false)
-
-  const resetDrag = () => {
-    dragOffsetRef.current = 0
-    isDraggingRef.current = false
-    setDragOffset(0)
-    setIsDragging(false)
-  }
-
-  const handleOpenChange = (nextOpen: boolean) => {
-    if (!nextOpen) resetDrag()
-    setOpen(nextOpen)
-  }
-
-  const handleDragStart = (event: ReactPointerEvent<HTMLDivElement>) => {
-    dragStart.current = event.clientY
-    dragStartedAt.current = performance.now()
-    dragOffsetRef.current = 0
-    isDraggingRef.current = true
-    setIsDragging(true)
-    event.preventDefault()
-  }
-
-  useEffect(() => {
-    const handlePointerMove = (event: PointerEvent) => {
-      if (!isDraggingRef.current) return
-      const nextOffset = Math.max(0, event.clientY - dragStart.current)
-      dragOffsetRef.current = nextOffset
-      setDragOffset(nextOffset)
-    }
-
-    const handlePointerEnd = () => {
-      if (!isDraggingRef.current) return
-      const elapsed = performance.now() - dragStartedAt.current
-      const shouldClose = dragOffsetRef.current >= 96 || (dragOffsetRef.current >= 42 && elapsed < 260)
-      isDraggingRef.current = false
-      setIsDragging(false)
-
-      if (shouldClose) {
-        setDragOffset(window.innerHeight)
-        window.setTimeout(() => {
-          setOpen(false)
-          resetDrag()
-        }, 180)
-        return
-      }
-
-      dragOffsetRef.current = 0
-      setDragOffset(0)
-    }
-
-    window.addEventListener("pointermove", handlePointerMove)
-    window.addEventListener("pointerup", handlePointerEnd)
-    window.addEventListener("pointercancel", handlePointerEnd)
-    return () => {
-      window.removeEventListener("pointermove", handlePointerMove)
-      window.removeEventListener("pointerup", handlePointerEnd)
-      window.removeEventListener("pointercancel", handlePointerEnd)
-    }
-  }, [])
-
-  return (
-    <Dialog.Root open={open} onOpenChange={handleOpenChange}>
-      <Dialog.Trigger asChild>
-        <Button variant="ghost" size="icon" className="nav-inbox" aria-label="Входящие">
-          <InboxIcon />
-        </Button>
-      </Dialog.Trigger>
-      <Dialog.Portal>
-        <Dialog.Overlay className="drawer-overlay" />
-        <Dialog.Content
-          className="drawer-content inbox-drawer"
-          data-dragging={isDragging}
-          style={{ "--drawer-drag-y": `${dragOffset}px` } as CSSProperties}
-          onOpenAutoFocus={(event) => event.preventDefault()}
-        >
-          <div className="drawer-handle" aria-hidden="true" onPointerDown={handleDragStart} />
-          <Dialog.Description className="sr-only">Список записей</Dialog.Description>
-          <div className="drawer-scroll-area">
-            <header className="drawer-header inbox-drawer__header">
-              <Dialog.Title>Записи</Dialog.Title>
-            </header>
-            <div className="inbox-records">
-              {inboxAppointments.map((appointment) => (
-                <article className="pending-card" key={appointment.id}>
-                  <span className="pending-card__stripe" />
-                  <div className="pending-card__head">
-                    <strong>{appointment.name}</strong>
-                    <span>{appointment.status}</span>
-                  </div>
-                  <p>Маникюр, покрытие гель-лак, педикюр</p>
-                  <p className="pending-card__meta">{appointment.time} · 7 500 ₽</p>
-                </article>
-              ))}
-            </div>
-          </div>
-        </Dialog.Content>
-      </Dialog.Portal>
-    </Dialog.Root>
-  )
-}
-
-function ConfirmationDrawer({ selectedDate, onOpenPage }: { selectedDate: Date; onOpenPage: (page: RecordsPage) => void }) {
-  const [open, setOpen] = useState(false)
+function ConfirmationDrawer({ open, selectedDate, onOpenChange, onOpenPage }: { open: boolean; selectedDate: Date; onOpenChange: (open: boolean) => void; onOpenPage: (page: RecordsPage) => void }) {
   const [dragOffset, setDragOffset] = useState(0)
   const [isDragging, setIsDragging] = useState(false)
   const dragStart = useRef(0)
@@ -546,7 +431,7 @@ function ConfirmationDrawer({ selectedDate, onOpenPage }: { selectedDate: Date; 
     if (!nextOpen) {
       resetDrag()
     }
-    setOpen(nextOpen)
+    onOpenChange(nextOpen)
   }
 
   const handleDragStart = (event: ReactPointerEvent<HTMLDivElement>) => {
@@ -576,7 +461,7 @@ function ConfirmationDrawer({ selectedDate, onOpenPage }: { selectedDate: Date; 
       if (shouldClose) {
         setDragOffset(window.innerHeight)
         window.setTimeout(() => {
-          setOpen(false)
+          onOpenChange(false)
           dragOffsetRef.current = 0
           setDragOffset(0)
         }, 180)
@@ -595,23 +480,15 @@ function ConfirmationDrawer({ selectedDate, onOpenPage }: { selectedDate: Date; 
       window.removeEventListener("pointerup", handlePointerEnd)
       window.removeEventListener("pointercancel", handlePointerEnd)
     }
-  }, [])
+  }, [onOpenChange])
 
   const openPage = (page: RecordsPage) => {
-    setOpen(false)
+    onOpenChange(false)
     onOpenPage(page)
   }
 
   return (
     <Dialog.Root open={open} onOpenChange={handleOpenChange}>
-      <Dialog.Trigger asChild>
-        <Button className="confirm-button" type="button">
-          <span className="confirm-button__icon"><Zap /></span>
-          <span>Подтвердите</span>
-          <span className="confirm-button__count">2 записи</span>
-        </Button>
-      </Dialog.Trigger>
-
       <Dialog.Portal>
         <Dialog.Overlay className="drawer-overlay" />
         <Dialog.Content
@@ -694,6 +571,7 @@ export function App() {
   const [selectedDay, setSelectedDay] = useState(todayKey)
   const [recordsPage, setRecordsPage] = useState<RecordsPage | null>(null)
   const [confirmedAppointments, setConfirmedAppointments] = useState<Record<string, boolean>>({})
+  const [isSummaryOpen, setIsSummaryOpen] = useState(false)
   const selectedDayIndex = week.findIndex((day) => day.key === selectedDay)
   const selectedDate = week[selectedDayIndex]?.date ?? today
   const isToday = selectedDay === todayKey
@@ -814,8 +692,14 @@ export function App() {
       </section>
 
       {selectedDayIndex === 1 && (
-        <ConfirmationDrawer selectedDate={selectedDate} onOpenPage={setRecordsPage} />
+        <Button className="confirm-button" type="button" onClick={() => setIsSummaryOpen(true)}>
+          <span className="confirm-button__icon"><Zap /></span>
+          <span>Подтвердите</span>
+          <span className="confirm-button__count">2 записи</span>
+        </Button>
       )}
+
+      <ConfirmationDrawer open={isSummaryOpen} selectedDate={selectedDate} onOpenChange={setIsSummaryOpen} onOpenPage={setRecordsPage} />
 
       <nav className="bottom-nav" aria-label="Основная навигация">
         <div className="bottom-nav__group">
@@ -826,7 +710,9 @@ export function App() {
             <img src="./avatar.png" alt="" />
           </Button>
         </div>
-        <InboxDrawer />
+        <Button variant="ghost" size="icon" className="nav-inbox" aria-label="Входящие" onClick={() => setIsSummaryOpen(true)}>
+          <InboxIcon />
+        </Button>
         <Button size="icon" className="add-button" aria-label="Добавить запись">
           <Plus />
         </Button>
