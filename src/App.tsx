@@ -10,12 +10,12 @@ import * as Dialog from "@radix-ui/react-dialog"
 import {
   ArrowLeft,
   CalendarClock,
-  CalendarDays,
+  Calendar as CalendarIcon,
   CircleMinus,
   CircleCheck,
   CheckCircle2,
   ChevronRight,
-  Inbox,
+  Inbox as InboxIcon,
   Lightbulb,
   Play,
   Pencil,
@@ -487,7 +487,7 @@ function InboxDrawer() {
     <Dialog.Root open={open} onOpenChange={handleOpenChange}>
       <Dialog.Trigger asChild>
         <Button variant="ghost" size="icon" className="nav-inbox" aria-label="Входящие">
-          <Inbox />
+          <InboxIcon />
         </Button>
       </Dialog.Trigger>
       <Dialog.Portal>
@@ -820,7 +820,7 @@ export function App() {
       <nav className="bottom-nav" aria-label="Основная навигация">
         <div className="bottom-nav__group">
           <Button variant="ghost" className="nav-button nav-button--active" aria-label="Календарь">
-            <CalendarDays />
+            <CalendarIcon />
           </Button>
           <Button variant="ghost" size="icon" className="nav-avatar" aria-label="Профиль">
             <img src="./avatar.png" alt="" />
