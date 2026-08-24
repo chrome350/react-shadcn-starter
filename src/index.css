@@ -676,6 +676,25 @@ button { font: inherit; -webkit-tap-highlight-color: transparent; }
 
 .accept-all-button:hover { background: #0d0d0f; }
 
+.canceled-list { margin-top: 28px; display: grid; gap: 6px; }
+.canceled-card { min-height: 123px; }
+.canceled-card__details { color: #77747a; text-decoration: line-through; text-decoration-thickness: 1px; }
+.canceled-card__actions { margin-top: 10px; display: flex; align-items: center; gap: 5px; }
+
+.delete-record-button,
+.restore-record-button {
+  height: 30px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.delete-record-button { color: #ff1539; background: #ffe0e5; }
+.delete-record-button:hover { color: #ff1539; background: #ffe0e5; }
+.restore-record-button { color: #222024; background: #e4e3e6; }
+.restore-record-button:hover { background: #e4e3e6; }
+
 @keyframes drawer-fade-in { from { opacity: 0; } }
 @keyframes drawer-slide-up { from { transform: translate(-50%, 100%); } }
 

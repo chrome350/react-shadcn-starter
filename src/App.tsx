@@ -201,9 +201,47 @@ function NewAppointments({ onBack }: { onBack: () => void }) {
   )
 }
 
+const canceledAppointments = [
+  { id: "canceled-angelina", name: "Ангелина Петрова", time: "28 сент, 16:00–17:00" },
+  { id: "canceled-olga", name: "Ольга Будкова", time: "28 сент, 17:00–18:00" },
+]
+
+function CanceledAppointments({ onBack }: { onBack: () => void }) {
+  return (
+    <section className="new-screen canceled-screen">
+      <header className="pending-header">
+        <Button variant="ghost" size="icon" className="pending-back" aria-label="Назад" onClick={onBack}>
+          <ArrowLeft />
+        </Button>
+        <Dialog.Title>Отмененные записи</Dialog.Title>
+      </header>
+
+      <div className="canceled-list">
+        {canceledAppointments.map((appointment) => (
+          <article className="pending-card canceled-card" key={appointment.id}>
+            <span className="pending-card__stripe" />
+            <div className="pending-card__head">
+              <strong>{appointment.name}</strong>
+              <span>НОВЫЙ</span>
+            </div>
+            <p className="canceled-card__details">Маникюр, покрытие гель-лак, педикюр</p>
+            <p className="pending-card__meta canceled-card__details">{appointment.time}</p>
+            <div className="canceled-card__actions">
+              <Button variant="ghost" className="delete-record-button">Удалить</Button>
+              <Button variant="ghost" className="restore-record-button">В расписание</Button>
+            </div>
+          </article>
+        ))}
+      </div>
+
+      <Button className="accept-all-button">Удалить все</Button>
+    </section>
+  )
+}
+
 function ConfirmationDrawer({ selectedDate }: { selectedDate: Date }) {
   const [open, setOpen] = useState(false)
-  const [drawerView, setDrawerView] = useState<"summary" | "pending" | "new">("summary")
+  const [drawerView, setDrawerView] = useState<"summary" | "pending" | "new" | "canceled">("summary")
   const [confirmedAppointments, setConfirmedAppointments] = useState<Record<string, boolean>>({})
   const [dragOffset, setDragOffset] = useState(0)
   const [isDragging, setIsDragging] = useState(false)
@@ -313,6 +351,8 @@ function ConfirmationDrawer({ selectedDate }: { selectedDate: Date }) {
             />
           ) : drawerView === "new" ? (
             <NewAppointments onBack={() => setDrawerView("summary")} />
+          ) : drawerView === "canceled" ? (
+            <CanceledAppointments onBack={() => setDrawerView("summary")} />
           ) : (
             <>
               <header className="drawer-header">
@@ -341,7 +381,7 @@ function ConfirmationDrawer({ selectedDate }: { selectedDate: Date }) {
                 <h2 id="important-title">Важно!</h2>
                 <button type="button" onClick={() => setDrawerView("pending")}><Zap /><span>Подтвердите <mark>2 записи</mark></span><ChevronRight /></button>
             <button type="button" onClick={() => setDrawerView("new")}><Zap /><span>У вас <mark>2 новые</mark> записи</span><ChevronRight /></button>
-            <button type="button"><Zap /><span>Клиент <mark>отменил</mark> запись</span><ChevronRight /></button>
+            <button type="button" onClick={() => setDrawerView("canceled")}><Zap /><span>Клиент <mark>отменил</mark> запись</span><ChevronRight /></button>
               </section>
 
               <section className="drawer-feed" aria-label="Советы">
