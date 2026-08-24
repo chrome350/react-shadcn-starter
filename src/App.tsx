@@ -194,7 +194,8 @@ function AppointmentDetailsDrawer({ trigger, status }: { trigger: ReactElement; 
           <div className="drawer-handle" aria-hidden="true" onPointerDown={handleDragStart} />
           <Dialog.Description className="sr-only">Подробная информация о записи клиента</Dialog.Description>
 
-          <div className="appointment-summary">
+          <div className="drawer-scroll-area">
+            <div className="appointment-summary">
             <header className="client-header">
               <div>
                 <Dialog.Title>Ольга Будкова</Dialog.Title>
@@ -212,7 +213,7 @@ function AppointmentDetailsDrawer({ trigger, status }: { trigger: ReactElement; 
             </section>
           </div>
 
-          <div className="appointment-details-body">
+            <div className="appointment-details-body">
             <section className="services-card" aria-label="Услуги и стоимость">
               <span>2 услуги</span>
               <p>Маникюр аппаратный</p>
@@ -235,6 +236,7 @@ function AppointmentDetailsDrawer({ trigger, status }: { trigger: ReactElement; 
               <div><Button variant="ghost" size="icon" className="detail-action detail-action--cancel" aria-label={status === "canceled" ? "Удалить запись" : "Отменить запись"}><X /></Button><span>{status === "canceled" ? "Удалить" : "Отменить"}</span></div>
               {status !== "canceled" && <div><Button variant="ghost" size="icon" className="detail-action" aria-label="Изменить запись"><Pencil /></Button><span>Изменить</span></div>}
               {status !== "canceled" && <div><Button variant="ghost" size="icon" className="detail-action" aria-label="Поделиться записью"><Share /></Button><span>Поделиться</span></div>}
+            </div>
             </div>
           </div>
         </Dialog.Content>
@@ -494,7 +496,8 @@ function ConfirmationDrawer({ selectedDate }: { selectedDate: Date }) {
             Сводка записей, важные уведомления и советы
           </Dialog.Description>
 
-          {drawerView === "pending" ? (
+          <div className="drawer-scroll-area">
+            {drawerView === "pending" ? (
             <PendingConfirmations
               confirmed={confirmedAppointments}
               onBack={() => setDrawerView("summary")}
@@ -562,7 +565,8 @@ function ConfirmationDrawer({ selectedDate }: { selectedDate: Date }) {
             </article>
               </section>
             </>
-          )}
+            )}
+          </div>
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>
