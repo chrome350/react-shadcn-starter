@@ -27,6 +27,7 @@ import {
 import { Button } from "@/components/ui/button"
 
 const weekdayLetters = ["П", "В", "С", "Ч", "П", "С", "В"]
+type RecordsPage = "pending" | "new" | "canceled"
 
 function dateKey(date: Date) {
   const year = date.getFullYear()
@@ -265,7 +266,7 @@ function PendingConfirmations({
         <Button variant="ghost" size="icon" className="pending-back" aria-label="Назад" onClick={onBack}>
           <ArrowLeft />
         </Button>
-        <Dialog.Title>Ждут подтверждения</Dialog.Title>
+        <h2>Ждут подтверждения</h2>
       </header>
 
       <p className="pending-intro">Эти записи уже сегодня, но клиенты еще<br />{" "}не подтвердили визит</p>
@@ -324,7 +325,7 @@ function NewAppointments({ onBack }: { onBack: () => void }) {
         <Button variant="ghost" size="icon" className="pending-back" aria-label="Назад" onClick={onBack}>
           <ArrowLeft />
         </Button>
-        <Dialog.Title>Новые записи</Dialog.Title>
+        <h2>Новые записи</h2>
       </header>
 
       <div className="new-groups">
@@ -366,7 +367,7 @@ function CanceledAppointments({ onBack }: { onBack: () => void }) {
         <Button variant="ghost" size="icon" className="pending-back" aria-label="Назад" onClick={onBack}>
           <ArrowLeft />
         </Button>
-        <Dialog.Title>Отмененные записи</Dialog.Title>
+        <h2>Отмененные записи</h2>
       </header>
 
       <div className="canceled-list">
@@ -392,10 +393,8 @@ function CanceledAppointments({ onBack }: { onBack: () => void }) {
   )
 }
 
-function ConfirmationDrawer({ selectedDate }: { selectedDate: Date }) {
+function ConfirmationDrawer({ selectedDate, onOpenPage }: { selectedDate: Date; onOpenPage: (page: RecordsPage) => void }) {
   const [open, setOpen] = useState(false)
-  const [drawerView, setDrawerView] = useState<"summary" | "pending" | "new" | "canceled">("summary")
-  const [confirmedAppointments, setConfirmedAppointments] = useState<Record<string, boolean>>({})
   const [dragOffset, setDragOffset] = useState(0)
   const [isDragging, setIsDragging] = useState(false)
   const dragStart = useRef(0)
@@ -415,7 +414,6 @@ function ConfirmationDrawer({ selectedDate }: { selectedDate: Date }) {
   const handleOpenChange = (nextOpen: boolean) => {
     if (!nextOpen) {
       resetDrag()
-      setDrawerView("summary")
     }
     setOpen(nextOpen)
   }
@@ -448,7 +446,6 @@ function ConfirmationDrawer({ selectedDate }: { selectedDate: Date }) {
         setDragOffset(window.innerHeight)
         window.setTimeout(() => {
           setOpen(false)
-          setDrawerView("summary")
           dragOffsetRef.current = 0
           setDragOffset(0)
         }, 180)
@@ -469,6 +466,11 @@ function ConfirmationDrawer({ selectedDate }: { selectedDate: Date }) {
     }
   }, [])
 
+  const openPage = (page: RecordsPage) => {
+    setOpen(false)
+    onOpenPage(page)
+  }
+
   return (
     <Dialog.Root open={open} onOpenChange={handleOpenChange}>
       <Dialog.Trigger asChild>
@@ -482,7 +484,7 @@ function ConfirmationDrawer({ selectedDate }: { selectedDate: Date }) {
       <Dialog.Portal>
         <Dialog.Overlay className="drawer-overlay" />
         <Dialog.Content
-          className={`drawer-content ${drawerView !== "summary" ? "drawer-content--pending" : ""}`}
+          className="drawer-content"
           data-dragging={isDragging}
           style={{ "--drawer-drag-y": `${dragOffset}px` } as CSSProperties}
           onOpenAutoFocus={(event) => event.preventDefault()}
@@ -497,24 +499,12 @@ function ConfirmationDrawer({ selectedDate }: { selectedDate: Date }) {
           </Dialog.Description>
 
           <div className="drawer-scroll-area">
-            {drawerView === "pending" ? (
-            <PendingConfirmations
-              confirmed={confirmedAppointments}
-              onBack={() => setDrawerView("summary")}
-              onToggle={(id) => setConfirmedAppointments((current) => ({ ...current, [id]: !current[id] }))}
-            />
-          ) : drawerView === "new" ? (
-            <NewAppointments onBack={() => setDrawerView("summary")} />
-          ) : drawerView === "canceled" ? (
-            <CanceledAppointments onBack={() => setDrawerView("summary")} />
-          ) : (
-            <>
-              <header className="drawer-header">
-                <span>{weekday}</span>
-                <Dialog.Title>{date}</Dialog.Title>
-              </header>
+            <header className="drawer-header">
+              <span>{weekday}</span>
+              <Dialog.Title>{date}</Dialog.Title>
+            </header>
 
-              <section className="drawer-stats" aria-label="Статистика записей">
+            <section className="drawer-stats" aria-label="Статистика записей">
             <article className="stat-card">
               <span>Сегодня</span>
               <strong>5 записей</strong>
@@ -529,16 +519,16 @@ function ConfirmationDrawer({ selectedDate }: { selectedDate: Date }) {
               <p>Загрузка <b className="load-low">15%</b></p>
               <div className="progress-track"><i className="progress-low" /></div>
             </article>
-              </section>
+            </section>
 
-              <section className="important-list" aria-labelledby="important-title">
-                <h2 id="important-title">Важно!</h2>
-                <button type="button" onClick={() => setDrawerView("pending")}><Zap /><span>Подтвердите <mark>2 записи</mark></span><ChevronRight /></button>
-            <button type="button" onClick={() => setDrawerView("new")}><Zap /><span>У вас <mark>2 новые</mark> записи</span><ChevronRight /></button>
-            <button type="button" onClick={() => setDrawerView("canceled")}><Zap /><span>Клиент <mark>отменил</mark> запись</span><ChevronRight /></button>
-              </section>
+            <section className="important-list" aria-labelledby="important-title">
+              <h2 id="important-title">Важно!</h2>
+              <button type="button" onClick={() => openPage("pending")}><Zap /><span>Подтвердите <mark>2 записи</mark></span><ChevronRight /></button>
+              <button type="button" onClick={() => openPage("new")}><Zap /><span>У вас <mark>2 новые</mark> записи</span><ChevronRight /></button>
+              <button type="button" onClick={() => openPage("canceled")}><Zap /><span>Клиент <mark>отменил</mark> запись</span><ChevronRight /></button>
+            </section>
 
-              <section className="drawer-feed" aria-label="Советы">
+            <section className="drawer-feed" aria-label="Советы">
             <article className="advice-card">
               <div className="advice-card__title"><Lightbulb /><strong>Совет</strong><Button variant="ghost" size="icon" aria-label="Скрыть совет"><X /></Button></div>
               <p>Не забывайте настраивать ваше расписание <mark>Онлайн-записи</mark> чтобы клиенты могли к вам записаться</p>
@@ -558,9 +548,7 @@ function ConfirmationDrawer({ selectedDate }: { selectedDate: Date }) {
               <p>Вау! А что так можно было?</p>
               <img className="promo-illustration" src="./promo-illustration.svg" alt="" />
             </article>
-              </section>
-            </>
-            )}
+            </section>
           </div>
         </Dialog.Content>
       </Dialog.Portal>
@@ -573,11 +561,31 @@ export function App() {
   const todayKey = dateKey(today)
   const week = getCurrentWeek(today)
   const [selectedDay, setSelectedDay] = useState(todayKey)
+  const [recordsPage, setRecordsPage] = useState<RecordsPage | null>(null)
+  const [confirmedAppointments, setConfirmedAppointments] = useState<Record<string, boolean>>({})
   const selectedDayIndex = week.findIndex((day) => day.key === selectedDay)
   const selectedDate = week[selectedDayIndex]?.date ?? today
   const isToday = selectedDay === todayKey
   const monthTitle = new Intl.DateTimeFormat("ru-RU", { month: "long" }).format(selectedDate)
   const scheduleDate = new Intl.DateTimeFormat("ru-RU", { day: "numeric", month: "long" }).format(selectedDate)
+
+  if (recordsPage) {
+    return (
+      <main className="phone-shell records-page-shell">
+        {recordsPage === "pending" ? (
+          <PendingConfirmations
+            confirmed={confirmedAppointments}
+            onBack={() => setRecordsPage(null)}
+            onToggle={(id) => setConfirmedAppointments((current) => ({ ...current, [id]: !current[id] }))}
+          />
+        ) : recordsPage === "new" ? (
+          <NewAppointments onBack={() => setRecordsPage(null)} />
+        ) : (
+          <CanceledAppointments onBack={() => setRecordsPage(null)} />
+        )}
+      </main>
+    )
+  }
 
   return (
     <main className="phone-shell">
@@ -675,7 +683,7 @@ export function App() {
       </section>
 
       {selectedDayIndex === 1 && (
-        <ConfirmationDrawer selectedDate={selectedDate} />
+        <ConfirmationDrawer selectedDate={selectedDate} onOpenPage={setRecordsPage} />
       )}
 
       <nav className="bottom-nav" aria-label="Основная навигация">
