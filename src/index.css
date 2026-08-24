@@ -405,28 +405,36 @@ button { font: inherit; -webkit-tap-highlight-color: transparent; }
 }
 
 .drawer-content {
-  position: fixed;
   z-index: 31;
-  left: 50%;
-  bottom: 0;
   width: min(100%, 440px);
   height: calc(100svh - 8px);
-  padding: 25px 18px 24px;
-  overflow-x: hidden;
-  overflow-y: auto;
   transform: translate(-50%, var(--drawer-drag-y, 0px));
-  border-radius: 28px 28px 0 0;
   color: #171719;
-  background: #fff;
-  outline: none;
   scrollbar-width: none;
-  transition: transform 180ms ease-out;
-  animation: drawer-slide-up 260ms cubic-bezier(0.32, 0.72, 0, 1);
+  background: #fff;
+  border-radius: 28px 28px 0 0;
+  outline: none;
+  padding: 24px 12px 24px;
+  transition: transform .18s ease-out;
+  animation: .64s cubic-bezier(.32, .72, 0, 1) drawer-slide-up;
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  overflow: hidden auto;
 }
 
 .drawer-content[data-dragging="true"] { transition: none; }
 
 .drawer-content::-webkit-scrollbar { display: none; }
+
+.drawer-scroll-area {
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+.drawer-scroll-area::-webkit-scrollbar { display: none; }
 
 .drawer-handle {
   position: absolute;
@@ -519,10 +527,9 @@ button { font: inherit; -webkit-tap-highlight-color: transparent; }
 }
 
 .stat-card {
-  min-width: 0;
-  padding: 20px 18px;
-  border-radius: 25px;
   background: #f3f2f4;
+  border-radius: 25px;
+  padding: 20px 18px;
 }
 
 .stat-card > span { color: #7d797f; font-size: 14px; }
@@ -539,7 +546,7 @@ button { font: inherit; -webkit-tap-highlight-color: transparent; }
 .progress-low { width: 28%; background: #ff173d; }
 
 .important-list { margin-top: 26px; }
-.important-list h2 { margin: 0 0 13px 6px; color: #713cff; font-size: 20px; }
+.important-list h2 { color: #713cff; margin: 0 0 0px 4px; font-size: 20px; font-weight: 600; }
 .important-list button {
   width: 100%;
   height: 48px;
@@ -613,23 +620,22 @@ button { font: inherit; -webkit-tap-highlight-color: transparent; }
 }
 
 .pending-back {
-  position: absolute;
-  top: -7px;
-  left: 7px;
+  color: #151418;
+  background: #fffffff5;
+  border-radius: 50%;
   width: 42px;
   height: 42px;
-  border-radius: 50%;
-  color: #151418;
-  background: rgba(255, 255, 255, 0.96);
-  box-shadow: 0 10px 28px rgba(36, 32, 39, 0.1);
+  position: absolute;
+  left: 0px;
+  box-shadow: 0 10px 28px #2420271a;
 }
 
 .pending-back:hover { background: #fff; }
 .pending-back svg { width: 22px !important; height: 22px !important; stroke-width: 2; }
 
 .pending-intro {
-  margin: 13px 27px 13px;
   color: #7d7a7f;
+  margin: 12px;
   font-size: 13px;
   line-height: 1.32;
 }
@@ -637,22 +643,22 @@ button { font: inherit; -webkit-tap-highlight-color: transparent; }
 .pending-list { display: grid; gap: 7px; }
 
 .pending-card {
-  position: relative;
-  min-height: 116px;
-  padding: 13px 10px 12px 32px;
-  overflow: hidden;
-  border-radius: 18px;
   background: #f4f3f5;
+  border-radius: 18px;
+  min-height: 116px;
+  padding: 12px 10px 12px 24px;
+  position: relative;
+  overflow: hidden;
 }
 
 .pending-card__stripe {
+  background: #bd52f3;
+  border-radius: 999px;
+  width: 3px;
   position: absolute;
   top: 12px;
   bottom: 12px;
-  left: 20px;
-  width: 3px;
-  border-radius: 999px;
-  background: #bd52f3;
+  left: 12px;
 }
 
 .pending-card__head { display: flex; align-items: center; gap: 8px; }
