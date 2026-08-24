@@ -554,14 +554,9 @@ function ConfirmationDrawer({ selectedDate }: { selectedDate: Date }) {
             </article>
 
             <article className="promo-card">
-              <h2>Привлекайте новых<br />клиентов с <u>Авито</u></h2>
+              <h2>Привлекайте новых<br />клиентов с <span className="promo-brand"><span>Авито</span><img src="./avito-underline.svg" alt="" /></span></h2>
               <p>Вау! А что так можно было?</p>
-              <svg className="promo-illustration" viewBox="0 0 280 210" aria-hidden="true">
-                <path d="M176 38c12-25 35-20 42-2 11-16 31-7 25 10 20-5 28 17 8 24 18 12 4 33-14 24-1 20-29 22-36 3-14 11-35-1-27-19-22-1-32-26-7-38 8-12 28-16 42-6Z" />
-                <path d="M151 79c-14 15-18 34-12 54l-24 41m40-76 34 35-14 55m-37-56 45 17m-75 25h81M95 183h103M119 75c-18 6-27 26-18 42m-18 65 12-43m-25 44h31" />
-                <circle cx="105" cy="65" r="17" />
-                <path d="M84 68c2-25 37-31 44-5M49 181h38v-59H55Zm12-59v-14h12v14" />
-              </svg>
+              <img className="promo-illustration" src="./promo-illustration.svg" alt="" />
             </article>
               </section>
             </>
