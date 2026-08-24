@@ -247,7 +247,7 @@ function ConfirmationDrawer({ selectedDate }: { selectedDate: Date }) {
             className="drawer-handle"
             aria-hidden="true"
             onPointerDown={handleDragStart}
-          ><span /></div>
+          />
           <Dialog.Description className="sr-only">
             Сводка записей, важные уведомления и советы
           </Dialog.Description>

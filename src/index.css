@@ -439,8 +439,7 @@ button { font: inherit; -webkit-tap-highlight-color: transparent; }
 
 .drawer-handle:active { cursor: grabbing; }
 
-.drawer-handle::before,
-.drawer-handle span {
+.drawer-handle::before {
   content: "";
   position: absolute;
   left: 0;
@@ -450,7 +449,6 @@ button { font: inherit; -webkit-tap-highlight-color: transparent; }
 }
 
 .drawer-handle::before { top: 0; background: #c9c7ca; }
-.drawer-handle span { top: 8px; background: #ff22bc; }
 
 .drawer-header > span {
   display: block;
@@ -552,8 +550,7 @@ button { font: inherit; -webkit-tap-highlight-color: transparent; }
 
 .drawer-content--pending { padding-top: 14px; }
 
-.drawer-content--pending .drawer-handle::before,
-.drawer-content--pending .drawer-handle span { opacity: 0; }
+.drawer-content--pending .drawer-handle::before { opacity: 0; }
 
 .pending-header {
   position: relative;
