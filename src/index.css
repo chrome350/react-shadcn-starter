@@ -801,7 +801,7 @@ button { font: inherit; -webkit-tap-highlight-color: transparent; }
 
 .nav-button--active { background: #e7e5e9; }
 .nav-button--active:hover { background: #e7e5e9; }
-.nav-button svg { width: 21px !important; height: 21px !important; fill: none; stroke-width: 1.8; }
+.nav-button svg { width: 20px !important; height: 20px !important; fill: none; stroke-width: 2px; }
 
 .nav-avatar { width: 54px; height: 48px; border-radius: 999px; }
 .nav-avatar img { width: 27px; height: 27px; object-fit: cover; border-radius: 50%; }
@@ -817,7 +817,7 @@ button { font: inherit; -webkit-tap-highlight-color: transparent; }
 }
 
 .nav-inbox:hover { background: #fff; }
-.nav-inbox svg { width: 21px !important; height: 21px !important; fill: none; stroke-width: 1.8; }
+.nav-inbox svg { width: 20px !important; height: 20px !important; fill: none; stroke-width: 2px; }
 
 .add-button {
   width: 50px;
