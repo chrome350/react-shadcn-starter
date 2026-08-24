@@ -70,7 +70,7 @@ type AppointmentProps = {
   status?: AppointmentStatus
 }
 
-type AppointmentStatus = "confirmed" | "pending" | "canceled"
+type AppointmentStatus = "confirmed" | "pending" | "new" | "canceled"
 
 function Appointment({ className, compact, duration, note, status = "confirmed" }: AppointmentProps) {
   return (
@@ -118,6 +118,7 @@ function AppointmentDetailsDrawer({ trigger, status }: { trigger: ReactElement; 
   const statusContent = {
     confirmed: { label: "Клиент подтвердил запись", icon: <CircleCheck /> },
     pending: { label: "Ждём подтверждения клиента", icon: <Zap /> },
+    new: { label: "Новая запись", icon: <Plus /> },
     canceled: { label: "Клиент отменил запись", icon: <CircleMinus /> },
   }[status]
 
@@ -273,7 +274,10 @@ function PendingConfirmations({
 
       <div className="pending-list">
         {pendingAppointments.map((appointment) => (
-          <article className="pending-card" key={appointment.id}>
+          <AppointmentDetailsDrawer
+            key={appointment.id}
+            status="pending"
+            trigger={<article className="pending-card appointment--interactive">
             <span className="pending-card__stripe" />
             <div className="pending-card__head">
               <strong>{appointment.name}</strong>
@@ -282,20 +286,24 @@ function PendingConfirmations({
             <p>Маникюр, покрытие гель-лак, педикюр</p>
             <p className="pending-card__meta">{appointment.time} · 1 час · 7 500 ₽</p>
             <div className="pending-card__actions">
-              <Button variant="ghost" className="contact-button">Связаться</Button>
+              <Button variant="ghost" className="contact-button" onClick={(event) => event.stopPropagation()}>Связаться</Button>
               <Button
                 variant="ghost"
                 className="arrival-switch"
                 data-checked={confirmed[appointment.id]}
                 role="switch"
                 aria-checked={confirmed[appointment.id]}
-                onClick={() => onToggle(appointment.id)}
+                onClick={(event) => {
+                  event.stopPropagation()
+                  onToggle(appointment.id)
+                }}
               >
                 <span />
                 Клиент придёт
               </Button>
             </div>
-          </article>
+            </article>}
+          />
         ))}
       </div>
     </section>
@@ -334,7 +342,10 @@ function NewAppointments({ onBack }: { onBack: () => void }) {
             <h3 id={`date-${group.date}`}>{group.date}</h3>
             <div className="new-list">
               {group.appointments.map((appointment) => (
-                <article className="pending-card new-card" key={appointment.id}>
+                <AppointmentDetailsDrawer
+                  key={appointment.id}
+                  status="new"
+                  trigger={<article className="pending-card new-card appointment--interactive">
                   <span className="pending-card__stripe" />
                   <div className="pending-card__head">
                     <strong>{appointment.name}</strong>
@@ -342,8 +353,9 @@ function NewAppointments({ onBack }: { onBack: () => void }) {
                   </div>
                   <p>Маникюр, покрытие гель-лак, педикюр</p>
                   <p className="pending-card__meta">{appointment.time} · {appointment.duration} · 7 500 ₽</p>
-                  <Button variant="ghost" className="new-card__accept">Принять</Button>
-                </article>
+                  <Button variant="ghost" className="new-card__accept" onClick={(event) => event.stopPropagation()}>Принять</Button>
+                  </article>}
+                />
               ))}
             </div>
           </section>
@@ -372,7 +384,10 @@ function CanceledAppointments({ onBack }: { onBack: () => void }) {
 
       <div className="canceled-list">
         {canceledAppointments.map((appointment) => (
-          <article className="pending-card canceled-card" key={appointment.id}>
+          <AppointmentDetailsDrawer
+            key={appointment.id}
+            status="canceled"
+            trigger={<article className="pending-card canceled-card appointment--interactive">
             <span className="pending-card__stripe" />
             <div className="pending-card__head">
               <strong>{appointment.name}</strong>
@@ -381,15 +396,131 @@ function CanceledAppointments({ onBack }: { onBack: () => void }) {
             <p className="canceled-card__details">Маникюр, покрытие гель-лак, педикюр</p>
             <p className="pending-card__meta canceled-card__details">{appointment.time}</p>
             <div className="canceled-card__actions">
-              <Button variant="ghost" className="delete-record-button">Удалить</Button>
-              <Button variant="ghost" className="restore-record-button">В расписание</Button>
+              <Button variant="ghost" className="delete-record-button" onClick={(event) => event.stopPropagation()}>Удалить</Button>
+              <Button variant="ghost" className="restore-record-button" onClick={(event) => event.stopPropagation()}>В расписание</Button>
             </div>
-          </article>
+            </article>}
+          />
         ))}
       </div>
 
       <Button className="accept-all-button">Удалить все</Button>
     </section>
+  )
+}
+
+const inboxAppointments = [
+  { id: "inbox-angelina", name: "Ангелина Петрова", time: "Сегодня, 16:00–17:00", status: "ЖДЁТ" },
+  { id: "inbox-olga", name: "Ольга Будкова", time: "Сегодня, 17:00–18:00", status: "НОВЫЙ" },
+  { id: "inbox-alexandra", name: "Александра Алексашенкова", time: "1 октября, 09:00–11:00", status: "НОВЫЙ" },
+]
+
+function InboxDrawer() {
+  const [open, setOpen] = useState(false)
+  const [dragOffset, setDragOffset] = useState(0)
+  const [isDragging, setIsDragging] = useState(false)
+  const dragStart = useRef(0)
+  const dragStartedAt = useRef(0)
+  const dragOffsetRef = useRef(0)
+  const isDraggingRef = useRef(false)
+
+  const resetDrag = () => {
+    dragOffsetRef.current = 0
+    isDraggingRef.current = false
+    setDragOffset(0)
+    setIsDragging(false)
+  }
+
+  const handleOpenChange = (nextOpen: boolean) => {
+    if (!nextOpen) resetDrag()
+    setOpen(nextOpen)
+  }
+
+  const handleDragStart = (event: ReactPointerEvent<HTMLDivElement>) => {
+    dragStart.current = event.clientY
+    dragStartedAt.current = performance.now()
+    dragOffsetRef.current = 0
+    isDraggingRef.current = true
+    setIsDragging(true)
+    event.preventDefault()
+  }
+
+  useEffect(() => {
+    const handlePointerMove = (event: PointerEvent) => {
+      if (!isDraggingRef.current) return
+      const nextOffset = Math.max(0, event.clientY - dragStart.current)
+      dragOffsetRef.current = nextOffset
+      setDragOffset(nextOffset)
+    }
+
+    const handlePointerEnd = () => {
+      if (!isDraggingRef.current) return
+      const elapsed = performance.now() - dragStartedAt.current
+      const shouldClose = dragOffsetRef.current >= 96 || (dragOffsetRef.current >= 42 && elapsed < 260)
+      isDraggingRef.current = false
+      setIsDragging(false)
+
+      if (shouldClose) {
+        setDragOffset(window.innerHeight)
+        window.setTimeout(() => {
+          setOpen(false)
+          resetDrag()
+        }, 180)
+        return
+      }
+
+      dragOffsetRef.current = 0
+      setDragOffset(0)
+    }
+
+    window.addEventListener("pointermove", handlePointerMove)
+    window.addEventListener("pointerup", handlePointerEnd)
+    window.addEventListener("pointercancel", handlePointerEnd)
+    return () => {
+      window.removeEventListener("pointermove", handlePointerMove)
+      window.removeEventListener("pointerup", handlePointerEnd)
+      window.removeEventListener("pointercancel", handlePointerEnd)
+    }
+  }, [])
+
+  return (
+    <Dialog.Root open={open} onOpenChange={handleOpenChange}>
+      <Dialog.Trigger asChild>
+        <Button variant="ghost" size="icon" className="nav-inbox" aria-label="Входящие">
+          <Inbox />
+        </Button>
+      </Dialog.Trigger>
+      <Dialog.Portal>
+        <Dialog.Overlay className="drawer-overlay" />
+        <Dialog.Content
+          className="drawer-content inbox-drawer"
+          data-dragging={isDragging}
+          style={{ "--drawer-drag-y": `${dragOffset}px` } as CSSProperties}
+          onOpenAutoFocus={(event) => event.preventDefault()}
+        >
+          <div className="drawer-handle" aria-hidden="true" onPointerDown={handleDragStart} />
+          <Dialog.Description className="sr-only">Список записей</Dialog.Description>
+          <div className="drawer-scroll-area">
+            <header className="drawer-header inbox-drawer__header">
+              <Dialog.Title>Записи</Dialog.Title>
+            </header>
+            <div className="inbox-records">
+              {inboxAppointments.map((appointment) => (
+                <article className="pending-card" key={appointment.id}>
+                  <span className="pending-card__stripe" />
+                  <div className="pending-card__head">
+                    <strong>{appointment.name}</strong>
+                    <span>{appointment.status}</span>
+                  </div>
+                  <p>Маникюр, покрытие гель-лак, педикюр</p>
+                  <p className="pending-card__meta">{appointment.time} · 7 500 ₽</p>
+                </article>
+              ))}
+            </div>
+          </div>
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
   )
 }
 
@@ -695,9 +826,7 @@ export function App() {
             <img src="./avatar.png" alt="" />
           </Button>
         </div>
-        <Button variant="ghost" size="icon" className="nav-inbox" aria-label="Входящие">
-          <Inbox />
-        </Button>
+        <InboxDrawer />
         <Button size="icon" className="add-button" aria-label="Добавить запись">
           <Plus />
         </Button>
