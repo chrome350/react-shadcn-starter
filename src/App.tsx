@@ -632,15 +632,11 @@ export function App() {
                 type="button"
                 aria-label={day.label}
                 aria-pressed={isActive}
+                data-dots={day.dots || undefined}
                 onClick={() => setSelectedDay(day.key)}
               >
                 <span className="weekday">{day.weekday}</span>
                 <span className="date-circle">{day.date.getDate()}</span>
-                {day.dots > 0 && (
-                  <span className="day-dots" aria-hidden="true">
-                    {Array.from({ length: 5 }, (_, index) => <i className={index < day.dots ? "is-filled" : ""} key={index} />)}
-                  </span>
-                )}
               </Button>
             )
           })}
