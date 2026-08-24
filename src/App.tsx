@@ -7,6 +7,7 @@ import {
 } from "react"
 import * as Dialog from "@radix-ui/react-dialog"
 import {
+  ArrowLeft,
   CalendarClock,
   CalendarDays,
   CheckCircle2,
@@ -91,8 +92,66 @@ function BreakCard() {
   )
 }
 
+const pendingAppointments = [
+  { id: "angelina", name: "Ангелина Петрова", time: "16:00–17:00" },
+  { id: "olga", name: "Ольга Будкова", time: "17:00–18:00" },
+]
+
+function PendingConfirmations({
+  confirmed,
+  onBack,
+  onToggle,
+}: {
+  confirmed: Record<string, boolean>
+  onBack: () => void
+  onToggle: (id: string) => void
+}) {
+  return (
+    <section className="pending-screen">
+      <header className="pending-header">
+        <Button variant="ghost" size="icon" className="pending-back" aria-label="Назад" onClick={onBack}>
+          <ArrowLeft />
+        </Button>
+        <Dialog.Title>Ждут подтверждения</Dialog.Title>
+      </header>
+
+      <p className="pending-intro">Эти записи уже сегодня, но клиенты еще<br />{" "}не подтвердили визит</p>
+
+      <div className="pending-list">
+        {pendingAppointments.map((appointment) => (
+          <article className="pending-card" key={appointment.id}>
+            <span className="pending-card__stripe" />
+            <div className="pending-card__head">
+              <strong>{appointment.name}</strong>
+              <span>НОВЫЙ</span>
+            </div>
+            <p>Маникюр, покрытие гель-лак, педикюр</p>
+            <p className="pending-card__meta">{appointment.time} · 1 час · 7 500 ₽</p>
+            <div className="pending-card__actions">
+              <Button variant="ghost" className="contact-button">Связаться</Button>
+              <Button
+                variant="ghost"
+                className="arrival-switch"
+                data-checked={confirmed[appointment.id]}
+                role="switch"
+                aria-checked={confirmed[appointment.id]}
+                onClick={() => onToggle(appointment.id)}
+              >
+                <span />
+                Клиент придёт
+              </Button>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+  )
+}
+
 function ConfirmationDrawer({ selectedDate }: { selectedDate: Date }) {
   const [open, setOpen] = useState(false)
+  const [drawerView, setDrawerView] = useState<"summary" | "pending">("summary")
+  const [confirmedAppointments, setConfirmedAppointments] = useState<Record<string, boolean>>({})
   const [dragOffset, setDragOffset] = useState(0)
   const [isDragging, setIsDragging] = useState(false)
   const dragStart = useRef(0)
@@ -110,7 +169,10 @@ function ConfirmationDrawer({ selectedDate }: { selectedDate: Date }) {
   }
 
   const handleOpenChange = (nextOpen: boolean) => {
-    if (!nextOpen) resetDrag()
+    if (!nextOpen) {
+      resetDrag()
+      setDrawerView("summary")
+    }
     setOpen(nextOpen)
   }
 
@@ -142,6 +204,7 @@ function ConfirmationDrawer({ selectedDate }: { selectedDate: Date }) {
         setDragOffset(window.innerHeight)
         window.setTimeout(() => {
           setOpen(false)
+          setDrawerView("summary")
           dragOffsetRef.current = 0
           setDragOffset(0)
         }, 180)
@@ -175,7 +238,7 @@ function ConfirmationDrawer({ selectedDate }: { selectedDate: Date }) {
       <Dialog.Portal>
         <Dialog.Overlay className="drawer-overlay" />
         <Dialog.Content
-          className="drawer-content"
+          className={`drawer-content ${drawerView === "pending" ? "drawer-content--pending" : ""}`}
           data-dragging={isDragging}
           style={{ "--drawer-drag-y": `${dragOffset}px` } as CSSProperties}
           onOpenAutoFocus={(event) => event.preventDefault()}
@@ -189,12 +252,20 @@ function ConfirmationDrawer({ selectedDate }: { selectedDate: Date }) {
             Сводка записей, важные уведомления и советы
           </Dialog.Description>
 
-          <header className="drawer-header">
-            <span>{weekday}</span>
-            <Dialog.Title>{date}</Dialog.Title>
-          </header>
+          {drawerView === "pending" ? (
+            <PendingConfirmations
+              confirmed={confirmedAppointments}
+              onBack={() => setDrawerView("summary")}
+              onToggle={(id) => setConfirmedAppointments((current) => ({ ...current, [id]: !current[id] }))}
+            />
+          ) : (
+            <>
+              <header className="drawer-header">
+                <span>{weekday}</span>
+                <Dialog.Title>{date}</Dialog.Title>
+              </header>
 
-          <section className="drawer-stats" aria-label="Статистика записей">
+              <section className="drawer-stats" aria-label="Статистика записей">
             <article className="stat-card">
               <span>Сегодня</span>
               <strong>5 записей</strong>
@@ -209,16 +280,16 @@ function ConfirmationDrawer({ selectedDate }: { selectedDate: Date }) {
               <p>Загрузка <b className="load-low">15%</b></p>
               <div className="progress-track"><i className="progress-low" /></div>
             </article>
-          </section>
+              </section>
 
-          <section className="important-list" aria-labelledby="important-title">
-            <h2 id="important-title">Важно!</h2>
-            <button type="button"><Zap /><span>Подтвердите <mark>2 записи</mark></span><ChevronRight /></button>
+              <section className="important-list" aria-labelledby="important-title">
+                <h2 id="important-title">Важно!</h2>
+                <button type="button" onClick={() => setDrawerView("pending")}><Zap /><span>Подтвердите <mark>2 записи</mark></span><ChevronRight /></button>
             <button type="button"><Zap /><span>У вас <mark>2 новые</mark> записи</span><ChevronRight /></button>
             <button type="button"><Zap /><span>Клиент <mark>отменил</mark> запись</span><ChevronRight /></button>
-          </section>
+              </section>
 
-          <section className="drawer-feed" aria-label="Советы">
+              <section className="drawer-feed" aria-label="Советы">
             <article className="advice-card">
               <div className="advice-card__title"><Lightbulb /><strong>Совет</strong><Button variant="ghost" size="icon" aria-label="Скрыть совет"><X /></Button></div>
               <p>Не забывайте настраивать ваше расписание <mark>Онлайн-записи</mark> чтобы клиенты могли к вам записаться</p>
@@ -243,7 +314,9 @@ function ConfirmationDrawer({ selectedDate }: { selectedDate: Date }) {
                 <path d="M84 68c2-25 37-31 44-5M49 181h38v-59H55Zm12-59v-14h12v14" />
               </svg>
             </article>
-          </section>
+              </section>
+            </>
+          )}
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>

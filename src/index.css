@@ -548,6 +548,96 @@ button { font: inherit; -webkit-tap-highlight-color: transparent; }
 .promo-card p { margin: 8px 0 0; color: #88827b; font-size: 17px; }
 .promo-illustration { width: 100%; height: auto; margin-top: 25px; fill: none; stroke: #0c0c0e; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
 
+.pending-screen { min-height: 100%; padding-top: 0; }
+
+.drawer-content--pending { padding-top: 14px; }
+
+.drawer-content--pending .drawer-handle::before,
+.drawer-content--pending .drawer-handle span { opacity: 0; }
+
+.pending-header {
+  position: relative;
+  height: 42px;
+  display: grid;
+  place-items: center;
+}
+
+.pending-header h2 {
+  margin: 0;
+  font-size: 18px;
+  line-height: 1;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.pending-back {
+  position: absolute;
+  top: -7px;
+  left: 7px;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  color: #151418;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 10px 28px rgba(36, 32, 39, 0.1);
+}
+
+.pending-back:hover { background: #fff; }
+.pending-back svg { width: 22px !important; height: 22px !important; stroke-width: 2; }
+
+.pending-intro {
+  margin: 13px 27px 13px;
+  color: #7d7a7f;
+  font-size: 13px;
+  line-height: 1.32;
+}
+
+.pending-list { display: grid; gap: 7px; }
+
+.pending-card {
+  position: relative;
+  min-height: 116px;
+  padding: 13px 10px 12px 32px;
+  overflow: hidden;
+  border-radius: 18px;
+  background: #f4f3f5;
+}
+
+.pending-card__stripe {
+  position: absolute;
+  top: 12px;
+  bottom: 12px;
+  left: 20px;
+  width: 3px;
+  border-radius: 999px;
+  background: #bd52f3;
+}
+
+.pending-card__head { display: flex; align-items: center; gap: 8px; }
+.pending-card__head strong { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 17px; line-height: 1.1; }
+.pending-card__head > span { margin-left: auto; padding: 3px 7px; border-radius: 999px; color: #757176; background: #e0dfe2; font-size: 11px; }
+.pending-card p { margin: 5px 0 0; font-size: 14px; line-height: 1.13; }
+.pending-card__meta { color: #78747a; }
+.pending-card__actions { margin-top: 10px; display: flex; align-items: center; gap: 5px; }
+
+.contact-button,
+.arrival-switch {
+  height: 30px;
+  padding: 0 10px;
+  border-radius: 999px;
+  color: #232025;
+  background: #e4e3e6;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.contact-button:hover,
+.arrival-switch:hover { background: #e4e3e6; }
+
+.arrival-switch { padding-left: 4px; }
+.arrival-switch > span { width: 24px; height: 24px; border-radius: 50%; background: #fff; box-shadow: inset 0 0 0 1px #eeecef; }
+.arrival-switch[data-checked="true"] > span { background: #8c50f5; box-shadow: inset 0 0 0 7px #fff; }
+
 @keyframes drawer-fade-in { from { opacity: 0; } }
 @keyframes drawer-slide-up { from { transform: translate(-50%, 100%); } }
 
