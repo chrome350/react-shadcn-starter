@@ -200,28 +200,30 @@ function AppointmentDetailsDrawer({ trigger }: { trigger: ReactElement }) {
             </section>
           </div>
 
-          <section className="services-card" aria-label="Услуги и стоимость">
-            <span>2 услуги</span>
-            <p>Маникюр аппаратный</p>
-            <p>Снятие гель-лака</p>
-            <i />
-            <div><strong>Общая стоимость</strong><strong>3 500 ₽</strong></div>
-          </section>
+          <div className="appointment-details-body">
+            <section className="services-card" aria-label="Услуги и стоимость">
+              <span>2 услуги</span>
+              <p>Маникюр аппаратный</p>
+              <p>Снятие гель-лака</p>
+              <i />
+              <div><strong>Общая стоимость</strong><strong>3 500 ₽</strong></div>
+            </section>
 
-          <section className="comment-card" aria-label="Комментарий">
-            <textarea
-              maxLength={100}
-              placeholder="Ваш комментарий"
-              value={comment}
-              onChange={(event) => setComment(event.target.value)}
-            />
-            <span>{comment.length} из 100</span>
-          </section>
+            <section className="comment-card" aria-label="Комментарий">
+              <textarea
+                maxLength={100}
+                placeholder="Ваш комментарий"
+                value={comment}
+                onChange={(event) => setComment(event.target.value)}
+              />
+              <span>{comment.length} из 100</span>
+            </section>
 
-          <div className="detail-actions">
-            <div><Button variant="ghost" size="icon" className="detail-action detail-action--cancel" aria-label="Отменить запись"><X /></Button><span>Отменить</span></div>
-            <div><Button variant="ghost" size="icon" className="detail-action" aria-label="Изменить запись"><Pencil /></Button><span>Изменить</span></div>
-            <div><Button variant="ghost" size="icon" className="detail-action" aria-label="Поделиться записью"><Share /></Button><span>Поделиться</span></div>
+            <div className="detail-actions">
+              <div><Button variant="ghost" size="icon" className="detail-action detail-action--cancel" aria-label="Отменить запись"><X /></Button><span>Отменить</span></div>
+              <div><Button variant="ghost" size="icon" className="detail-action" aria-label="Изменить запись"><Pencil /></Button><span>Изменить</span></div>
+              <div><Button variant="ghost" size="icon" className="detail-action" aria-label="Поделиться записью"><Share /></Button><span>Поделиться</span></div>
+            </div>
           </div>
         </Dialog.Content>
       </Dialog.Portal>

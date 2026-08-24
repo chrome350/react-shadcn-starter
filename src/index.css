@@ -471,10 +471,8 @@ button { font: inherit; -webkit-tap-highlight-color: transparent; }
 .appointment-date p { margin: 0; font-size: 19px; line-height: 1.25; }
 .appointment-date strong { display: block; margin-top: 4px; font-size: 19px; line-height: 1.25; font-weight: 500; }
 
+.appointment-details-body { padding: 0 12px; }
 .services-card { margin-top: 22px; padding: 23px 18px 18px; border-radius: 26px; background: #fff; }
-.appointment-detail-drawer > .services-card,
-.appointment-detail-drawer > .comment-card,
-.appointment-detail-drawer > .detail-actions { margin-right: 28px; margin-left: 28px; }
 .services-card > span { color: #858188; font-size: 14px; }
 .services-card > p { margin: 15px 0 0; font-size: 18px; line-height: 1.05; }
 .services-card > p + p { margin-top: 13px; }
