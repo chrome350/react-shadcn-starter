@@ -508,6 +508,8 @@ button { font: inherit; -webkit-tap-highlight-color: transparent; }
 .detail-action svg { width: 28px !important; height: 28px !important; stroke-width: 2; }
 .detail-action--cancel { color: #ff1438; }
 
+.drawer-header { padding: 0px 8px; }
+
 .drawer-header > span {
   display: block;
   color: #ca65fa;
@@ -567,12 +569,18 @@ button { font: inherit; -webkit-tap-highlight-color: transparent; }
   font-size: 16px;
 }
 
+.important-list button:last-child { border-bottom: 0; }
+
 .important-list button > svg:first-child { width: 23px; height: 23px; padding: 5px; border-radius: 50%; color: #fff; fill: #fff; background: #8150ff; }
 .important-list button > svg:last-child { width: 17px; color: #d1ced3; }
 .important-list mark,
 .advice-card mark { padding: 1px 4px; border-radius: 4px; color: #7c35ee; background: #efe3ff; }
 
-.drawer-feed { margin-top: 28px; display: grid; gap: 15px; }
+.drawer-feed {
+  gap: 4px;
+  margin-top: 28px;
+  display: grid;
+}
 .advice-card { position: relative; padding: 17px 18px 20px 49px; border-radius: 24px; background: #f4f3f5; }
 .advice-card__title { min-height: 26px; display: flex; align-items: center; gap: 10px; }
 .advice-card__title > svg { position: absolute; top: 19px; left: 18px; width: 20px; color: #ffc936; fill: #fff6c9; }
