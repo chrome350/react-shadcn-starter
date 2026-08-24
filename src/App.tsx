@@ -148,9 +148,62 @@ function PendingConfirmations({
   )
 }
 
+const newAppointmentGroups = [
+  {
+    date: "28 сентября",
+    appointments: [
+      { id: "new-angelina", name: "Ангелина Петрова", time: "16:00–17:00", duration: "1 час" },
+      { id: "new-olga", name: "Ольга Будкова", time: "17:00–18:00", duration: "1 час" },
+    ],
+  },
+  {
+    date: "1 октября",
+    appointments: [
+      { id: "new-alexandra", name: "Александра Алексашенкова", time: "09:00–11:00", duration: "2 часа" },
+    ],
+  },
+]
+
+function NewAppointments({ onBack }: { onBack: () => void }) {
+  return (
+    <section className="new-screen">
+      <header className="pending-header">
+        <Button variant="ghost" size="icon" className="pending-back" aria-label="Назад" onClick={onBack}>
+          <ArrowLeft />
+        </Button>
+        <Dialog.Title>Новые записи</Dialog.Title>
+      </header>
+
+      <div className="new-groups">
+        {newAppointmentGroups.map((group) => (
+          <section className="new-group" key={group.date} aria-labelledby={`date-${group.date}`}>
+            <h3 id={`date-${group.date}`}>{group.date}</h3>
+            <div className="new-list">
+              {group.appointments.map((appointment) => (
+                <article className="pending-card new-card" key={appointment.id}>
+                  <span className="pending-card__stripe" />
+                  <div className="pending-card__head">
+                    <strong>{appointment.name}</strong>
+                    <span>НОВЫЙ</span>
+                  </div>
+                  <p>Маникюр, покрытие гель-лак, педикюр</p>
+                  <p className="pending-card__meta">{appointment.time} · {appointment.duration} · 7 500 ₽</p>
+                  <Button variant="ghost" className="new-card__accept">Принять</Button>
+                </article>
+              ))}
+            </div>
+          </section>
+        ))}
+      </div>
+
+      <Button className="accept-all-button">Принять все</Button>
+    </section>
+  )
+}
+
 function ConfirmationDrawer({ selectedDate }: { selectedDate: Date }) {
   const [open, setOpen] = useState(false)
-  const [drawerView, setDrawerView] = useState<"summary" | "pending">("summary")
+  const [drawerView, setDrawerView] = useState<"summary" | "pending" | "new">("summary")
   const [confirmedAppointments, setConfirmedAppointments] = useState<Record<string, boolean>>({})
   const [dragOffset, setDragOffset] = useState(0)
   const [isDragging, setIsDragging] = useState(false)
@@ -238,7 +291,7 @@ function ConfirmationDrawer({ selectedDate }: { selectedDate: Date }) {
       <Dialog.Portal>
         <Dialog.Overlay className="drawer-overlay" />
         <Dialog.Content
-          className={`drawer-content ${drawerView === "pending" ? "drawer-content--pending" : ""}`}
+          className={`drawer-content ${drawerView !== "summary" ? "drawer-content--pending" : ""}`}
           data-dragging={isDragging}
           style={{ "--drawer-drag-y": `${dragOffset}px` } as CSSProperties}
           onOpenAutoFocus={(event) => event.preventDefault()}
@@ -258,6 +311,8 @@ function ConfirmationDrawer({ selectedDate }: { selectedDate: Date }) {
               onBack={() => setDrawerView("summary")}
               onToggle={(id) => setConfirmedAppointments((current) => ({ ...current, [id]: !current[id] }))}
             />
+          ) : drawerView === "new" ? (
+            <NewAppointments onBack={() => setDrawerView("summary")} />
           ) : (
             <>
               <header className="drawer-header">
@@ -285,7 +340,7 @@ function ConfirmationDrawer({ selectedDate }: { selectedDate: Date }) {
               <section className="important-list" aria-labelledby="important-title">
                 <h2 id="important-title">Важно!</h2>
                 <button type="button" onClick={() => setDrawerView("pending")}><Zap /><span>Подтвердите <mark>2 записи</mark></span><ChevronRight /></button>
-            <button type="button"><Zap /><span>У вас <mark>2 новые</mark> записи</span><ChevronRight /></button>
+            <button type="button" onClick={() => setDrawerView("new")}><Zap /><span>У вас <mark>2 новые</mark> записи</span><ChevronRight /></button>
             <button type="button"><Zap /><span>Клиент <mark>отменил</mark> запись</span><ChevronRight /></button>
               </section>
 
