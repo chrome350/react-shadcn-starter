@@ -468,7 +468,7 @@ button { font: inherit; -webkit-tap-highlight-color: transparent; }
 .appointment-detail-drawer {
   background: linear-gradient(#faecff 0%, #f5f3f7 100%);
   border-radius: 28px 28px 0 0;
-  height: 640px;
+  height: 648px;
   padding: 32px 0 24px;
 }
 
