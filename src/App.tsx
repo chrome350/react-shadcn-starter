@@ -264,6 +264,46 @@ function PendingConfirmations({
   onBack: () => void
   onToggle: (id: string) => void
 }) {
+  const waitingAppointments = pendingAppointments.filter((appointment) => !confirmed[appointment.id])
+  const confirmedItems = pendingAppointments.filter((appointment) => confirmed[appointment.id])
+
+  const renderAppointment = (appointment: (typeof pendingAppointments)[number]) => {
+    const isConfirmed = Boolean(confirmed[appointment.id])
+
+    return (
+      <AppointmentDetailsDrawer
+        key={appointment.id}
+        status={isConfirmed ? "confirmed" : "pending"}
+        trigger={<article className="pending-card appointment--interactive">
+        <span className="pending-card__stripe" />
+        <div className="pending-card__head">
+          <strong>{appointment.name}</strong>
+          <span>НОВЫЙ</span>
+        </div>
+        <p>Маникюр, покрытие гель-лак, педикюр</p>
+        <p className="pending-card__meta">{appointment.time} · 1 час · 7 500 ₽</p>
+        <div className="pending-card__actions">
+          <Button variant="ghost" className="contact-button" onClick={(event) => event.stopPropagation()}>Связаться</Button>
+          <Button
+            variant="ghost"
+            className="arrival-switch"
+            data-checked={isConfirmed}
+            role="switch"
+            aria-checked={isConfirmed}
+            onClick={(event) => {
+              event.stopPropagation()
+              onToggle(appointment.id)
+            }}
+          >
+            {isConfirmed ? <CheckCircle2 aria-hidden="true" /> : <span />}
+            Клиент придёт
+          </Button>
+        </div>
+        </article>}
+      />
+    )
+  }
+
   return (
     <section className="pending-screen">
       <header className="pending-header">
@@ -276,39 +316,17 @@ function PendingConfirmations({
       <p className="pending-intro">Эти записи уже сегодня, но клиенты еще<br />{" "}не подтвердили визит</p>
 
       <div className="pending-list">
-        {pendingAppointments.map((appointment) => (
-          <AppointmentDetailsDrawer
-            key={appointment.id}
-            status="pending"
-            trigger={<article className="pending-card appointment--interactive">
-            <span className="pending-card__stripe" />
-            <div className="pending-card__head">
-              <strong>{appointment.name}</strong>
-              <span>НОВЫЙ</span>
-            </div>
-            <p>Маникюр, покрытие гель-лак, педикюр</p>
-            <p className="pending-card__meta">{appointment.time} · 1 час · 7 500 ₽</p>
-            <div className="pending-card__actions">
-              <Button variant="ghost" className="contact-button" onClick={(event) => event.stopPropagation()}>Связаться</Button>
-              <Button
-                variant="ghost"
-                className="arrival-switch"
-                data-checked={confirmed[appointment.id]}
-                role="switch"
-                aria-checked={confirmed[appointment.id]}
-                onClick={(event) => {
-                  event.stopPropagation()
-                  onToggle(appointment.id)
-                }}
-              >
-                <span />
-                Клиент придёт
-              </Button>
-            </div>
-            </article>}
-          />
-        ))}
+        {waitingAppointments.map(renderAppointment)}
       </div>
+
+      {confirmedItems.length > 0 && (
+        <section className="confirmed-appointments" aria-labelledby="confirmed-title">
+          <h3 id="confirmed-title">Подтверждены</h3>
+          <div className="pending-list">
+            {confirmedItems.map(renderAppointment)}
+          </div>
+        </section>
+      )}
     </section>
   )
 }

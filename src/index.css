@@ -70,8 +70,8 @@ button { font: inherit; -webkit-tap-highlight-color: transparent; }
 }
 
 .calendar-header {
-  height: 126px;
   border-bottom: 1px solid #eeecef;
+  height: 156px;
 }
 
 .month-row {
@@ -134,12 +134,12 @@ button { font: inherit; -webkit-tap-highlight-color: transparent; }
 .history-button--only { margin-left: auto; }
 
 .week-strip {
-  height: 73px;
-  display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
   width: 100%;
+  height: 88px;
   margin: 0;
   padding: 0;
+  display: grid;
   transform: translateY(-4px);
 }
 
@@ -229,7 +229,7 @@ button { font: inherit; -webkit-tap-highlight-color: transparent; }
 
 .schedule {
   position: relative;
-  height: calc(100svh - 126px);
+  height: calc(100svh - 156px);
   overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior-y: contain;
@@ -722,7 +722,12 @@ button { font: inherit; -webkit-tap-highlight-color: transparent; }
 
 .arrival-switch { padding-left: 4px; }
 .arrival-switch > span { width: 24px; height: 24px; border-radius: 50%; background: #fff; box-shadow: inset 0 0 0 1px #eeecef; }
-.arrival-switch[data-checked="true"] > span { background: #8c50f5; box-shadow: inset 0 0 0 7px #fff; }
+.arrival-switch[data-checked="true"] { color: #fff; background: #101012; }
+.arrival-switch[data-checked="true"]:hover { background: #101012; }
+.arrival-switch > svg { width: 24px !important; height: 24px !important; color: #00c853; fill: #00c853; stroke: #fff; stroke-width: 2px; }
+
+.confirmed-appointments { margin-top: 24px; }
+.confirmed-appointments h3 { margin: 0 0 14px 24px; font-size: 21px; line-height: 1; font-weight: 650; }
 
 .new-screen {
   min-height: 100%;
@@ -826,7 +831,7 @@ button { font: inherit; -webkit-tap-highlight-color: transparent; }
 .nav-button svg { width: 20px !important; height: 20px !important; fill: none; stroke-width: 2px; }
 
 .nav-avatar { width: 54px; height: 48px; border-radius: 999px; }
-.nav-avatar img { width: 27px; height: 27px; object-fit: cover; border-radius: 50%; }
+.nav-avatar img { object-fit: cover; border-radius: 50%; width: 32px; height: 32px; }
 
 .nav-inbox {
   width: 50px;
