@@ -468,6 +468,7 @@ button { font: inherit; -webkit-tap-highlight-color: transparent; }
 }
 
 .drawer-content[data-dragging="true"] { transition: none; }
+.drawer-content[data-static="true"] { animation: none; }
 
 .drawer-content::-webkit-scrollbar { display: none; }
 
