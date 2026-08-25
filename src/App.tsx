@@ -614,6 +614,9 @@ export function App() {
   const scheduleDate = new Intl.DateTimeFormat("ru-RU", { day: "numeric", month: "long" }).format(selectedDate)
 
   const openRecordsPage = (page: RecordsPage) => {
+    if (page === "pending" && !viewedRecordPages.pending) {
+      setConfirmedAppointments((current) => ({ ...current, olga: true }))
+    }
     setViewedRecordPages((current) => ({ ...current, [page]: true }))
     setRecordsPage(page)
   }
