@@ -29,6 +29,7 @@ import { Button } from "@/components/ui/button"
 
 const weekdayLetters = ["П", "В", "С", "Ч", "П", "С", "В"]
 type RecordsPage = "pending" | "new" | "canceled"
+type ViewedRecordPages = Record<RecordsPage, boolean>
 
 function dateKey(date: Date) {
   const year = date.getFullYear()
@@ -410,7 +411,7 @@ function CanceledAppointments({ onBack }: { onBack: () => void }) {
   )
 }
 
-function ConfirmationDrawer({ open, selectedDate, onOpenChange, onOpenPage }: { open: boolean; selectedDate: Date; onOpenChange: (open: boolean) => void; onOpenPage: (page: RecordsPage) => void }) {
+function ConfirmationDrawer({ open, selectedDate, viewedPages, onOpenChange, onOpenPage }: { open: boolean; selectedDate: Date; viewedPages: ViewedRecordPages; onOpenChange: (open: boolean) => void; onOpenPage: (page: RecordsPage) => void }) {
   const [dragOffset, setDragOffset] = useState(0)
   const [isDragging, setIsDragging] = useState(false)
   const dragStart = useRef(0)
@@ -531,9 +532,9 @@ function ConfirmationDrawer({ open, selectedDate, onOpenChange, onOpenPage }: { 
 
             <section className="important-list" aria-labelledby="important-title">
               <h2 id="important-title">Важно!</h2>
-              <button type="button" onClick={() => openPage("pending")}><Zap /><span>Подтвердите <mark>2 записи</mark></span><ChevronRight /></button>
-              <button type="button" onClick={() => openPage("new")}><Zap /><span>У вас <mark>2 новые</mark> записи</span><ChevronRight /></button>
-              <button type="button" onClick={() => openPage("canceled")}><Zap /><span>Клиент <mark>отменил</mark> запись</span><ChevronRight /></button>
+              <button className={viewedPages.pending ? "is-viewed" : undefined} type="button" onClick={() => openPage("pending")}><Zap /><span>Подтвердите <mark>2 записи</mark></span><ChevronRight /></button>
+              <button className={viewedPages.new ? "is-viewed" : undefined} type="button" onClick={() => openPage("new")}><Zap /><span>У вас <mark>2 новые</mark> записи</span><ChevronRight /></button>
+              <button className={viewedPages.canceled ? "is-viewed" : undefined} type="button" onClick={() => openPage("canceled")}><Zap /><span>Клиент <mark>отменил</mark> запись</span><ChevronRight /></button>
             </section>
 
             <section className="drawer-feed" aria-label="Советы">
@@ -572,11 +573,17 @@ export function App() {
   const [recordsPage, setRecordsPage] = useState<RecordsPage | null>(null)
   const [confirmedAppointments, setConfirmedAppointments] = useState<Record<string, boolean>>({})
   const [isSummaryOpen, setIsSummaryOpen] = useState(false)
+  const [viewedRecordPages, setViewedRecordPages] = useState<ViewedRecordPages>({ pending: false, new: false, canceled: false })
   const selectedDayIndex = week.findIndex((day) => day.key === selectedDay)
   const selectedDate = week[selectedDayIndex]?.date ?? today
   const isToday = selectedDay === todayKey
   const monthTitle = new Intl.DateTimeFormat("ru-RU", { month: "long" }).format(selectedDate)
   const scheduleDate = new Intl.DateTimeFormat("ru-RU", { day: "numeric", month: "long" }).format(selectedDate)
+
+  const openRecordsPage = (page: RecordsPage) => {
+    setViewedRecordPages((current) => ({ ...current, [page]: true }))
+    setRecordsPage(page)
+  }
 
   if (recordsPage) {
     return (
@@ -695,7 +702,7 @@ export function App() {
         </Button>
       )}
 
-      <ConfirmationDrawer open={isSummaryOpen} selectedDate={selectedDate} onOpenChange={setIsSummaryOpen} onOpenPage={setRecordsPage} />
+      <ConfirmationDrawer open={isSummaryOpen} selectedDate={selectedDate} viewedPages={viewedRecordPages} onOpenChange={setIsSummaryOpen} onOpenPage={openRecordsPage} />
 
       <nav className="bottom-nav" aria-label="Основная навигация">
         <div className="bottom-nav__group">
