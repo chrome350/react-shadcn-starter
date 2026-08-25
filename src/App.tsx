@@ -730,8 +730,8 @@ function ConfirmationDrawer({ open, isStatic, selectedDate, viewedPages, hiddenP
             </article>
 
             <article className="promo-card">
-              <h2>Привлекайте новых<br />клиентов с <span className="promo-brand"><span>Авито</span><img src="./avito-underline.svg" alt="" /></span></h2>
-              <p>Вау! А что так можно было?</p>
+              <h2>Как эффективно привлекать <span className="promo-brand"><span>новых</span><img src="./avito-underline.svg" alt="" /></span> клиентов?</h2>
+              <p>Разбираемся в статье</p>
               <img className="promo-illustration" src="./promo-illustration.svg" alt="" />
             </article>
             </section>
