@@ -347,7 +347,7 @@ const newAppointmentGroups = [
   },
 ]
 
-function NewAppointments({ onBack }: { onBack: () => void }) {
+function NewAppointments({ onBack, onAcceptAll }: { onBack: () => void; onAcceptAll: () => void }) {
   return (
     <section className="new-screen">
       <header className="pending-header">
@@ -383,7 +383,7 @@ function NewAppointments({ onBack }: { onBack: () => void }) {
         ))}
       </div>
 
-      <Button className="accept-all-button">Принять все</Button>
+      <Button className="accept-all-button" onClick={onAcceptAll}>Принять все</Button>
     </section>
   )
 }
@@ -393,7 +393,7 @@ const canceledAppointments = [
   { id: "canceled-olga", name: "Ольга Будкова", time: "28 сент, 17:00–18:00" },
 ]
 
-function CanceledAppointments({ onBack }: { onBack: () => void }) {
+function CanceledAppointments({ onBack, onDeleteAll }: { onBack: () => void; onDeleteAll: () => void }) {
   return (
     <section className="new-screen canceled-screen">
       <header className="pending-header">
@@ -425,12 +425,12 @@ function CanceledAppointments({ onBack }: { onBack: () => void }) {
         ))}
       </div>
 
-      <Button className="accept-all-button">Удалить все</Button>
+      <Button className="accept-all-button" onClick={onDeleteAll}>Удалить все</Button>
     </section>
   )
 }
 
-function ConfirmationDrawer({ open, selectedDate, viewedPages, onOpenChange, onOpenPage }: { open: boolean; selectedDate: Date; viewedPages: ViewedRecordPages; onOpenChange: (open: boolean) => void; onOpenPage: (page: RecordsPage) => void }) {
+function ConfirmationDrawer({ open, selectedDate, viewedPages, hiddenPages, onOpenChange, onOpenPage }: { open: boolean; selectedDate: Date; viewedPages: ViewedRecordPages; hiddenPages: ViewedRecordPages; onOpenChange: (open: boolean) => void; onOpenPage: (page: RecordsPage) => void }) {
   const [dragOffset, setDragOffset] = useState(0)
   const [isDragging, setIsDragging] = useState(false)
   const dragStart = useRef(0)
@@ -439,9 +439,10 @@ function ConfirmationDrawer({ open, selectedDate, viewedPages, onOpenChange, onO
   const isDraggingRef = useRef(false)
   const weekday = new Intl.DateTimeFormat("ru-RU", { weekday: "long" }).format(selectedDate).toUpperCase()
   const date = new Intl.DateTimeFormat("ru-RU", { day: "numeric", month: "long" }).format(selectedDate)
+  const visibleImportantPages = importantPageOrder.filter((page) => !hiddenPages[page])
   const sortedImportantPages = [
-    ...importantPageOrder.filter((page) => !viewedPages[page]),
-    ...importantPageOrder.filter((page) => viewedPages[page]),
+    ...visibleImportantPages.filter((page) => !viewedPages[page]),
+    ...visibleImportantPages.filter((page) => viewedPages[page]),
   ]
 
   const resetDrag = () => {
@@ -607,18 +608,26 @@ export function App() {
   const [confirmedAppointments, setConfirmedAppointments] = useState<Record<string, boolean>>({})
   const [isSummaryOpen, setIsSummaryOpen] = useState(false)
   const [viewedRecordPages, setViewedRecordPages] = useState<ViewedRecordPages>({ pending: false, new: false, canceled: false })
+  const [completedRecordPages, setCompletedRecordPages] = useState<ViewedRecordPages>({ pending: false, new: false, canceled: false })
   const selectedDayIndex = week.findIndex((day) => day.key === selectedDay)
   const selectedDate = week[selectedDayIndex]?.date ?? today
   const isToday = selectedDay === todayKey
   const monthTitle = new Intl.DateTimeFormat("ru-RU", { month: "long" }).format(selectedDate)
   const scheduleDate = new Intl.DateTimeFormat("ru-RU", { day: "numeric", month: "long" }).format(selectedDate)
+  const allPendingAppointmentsConfirmed = pendingAppointments.every((appointment) => confirmedAppointments[appointment.id])
+  const hiddenRecordPages: ViewedRecordPages = {
+    ...completedRecordPages,
+    pending: allPendingAppointmentsConfirmed,
+  }
 
   const openRecordsPage = (page: RecordsPage) => {
-    if (page === "pending" && !viewedRecordPages.pending) {
-      setConfirmedAppointments((current) => ({ ...current, olga: true }))
-    }
     setViewedRecordPages((current) => ({ ...current, [page]: true }))
     setRecordsPage(page)
+  }
+
+  const returnToSummary = () => {
+    setRecordsPage(null)
+    setIsSummaryOpen(true)
   }
 
   if (recordsPage) {
@@ -627,13 +636,19 @@ export function App() {
         {recordsPage === "pending" ? (
           <PendingConfirmations
             confirmed={confirmedAppointments}
-            onBack={() => setRecordsPage(null)}
+            onBack={returnToSummary}
             onToggle={(id) => setConfirmedAppointments((current) => ({ ...current, [id]: !current[id] }))}
           />
         ) : recordsPage === "new" ? (
-          <NewAppointments onBack={() => setRecordsPage(null)} />
+          <NewAppointments
+            onBack={returnToSummary}
+            onAcceptAll={() => setCompletedRecordPages((current) => ({ ...current, new: true }))}
+          />
         ) : (
-          <CanceledAppointments onBack={() => setRecordsPage(null)} />
+          <CanceledAppointments
+            onBack={returnToSummary}
+            onDeleteAll={() => setCompletedRecordPages((current) => ({ ...current, canceled: true }))}
+          />
         )}
       </main>
     )
@@ -739,7 +754,7 @@ export function App() {
         </Button>
       )}
 
-      <ConfirmationDrawer open={isSummaryOpen} selectedDate={selectedDate} viewedPages={viewedRecordPages} onOpenChange={setIsSummaryOpen} onOpenPage={openRecordsPage} />
+      <ConfirmationDrawer open={isSummaryOpen} selectedDate={selectedDate} viewedPages={viewedRecordPages} hiddenPages={hiddenRecordPages} onOpenChange={setIsSummaryOpen} onOpenPage={openRecordsPage} />
 
       <nav className="bottom-nav" aria-label="Основная навигация">
         <div className="bottom-nav__group">
