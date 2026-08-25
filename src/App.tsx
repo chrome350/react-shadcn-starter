@@ -796,7 +796,10 @@ export function App() {
             accepted={acceptedNewAppointments}
             onBack={returnToSummary}
             onAccept={(id) => setAcceptedNewAppointments((current) => ({ ...current, [id]: true }))}
-            onAcceptAll={() => setAcceptedNewAppointments(Object.fromEntries(newAppointmentIds.map((id) => [id, true])))}
+            onAcceptAll={() => {
+              setAcceptedNewAppointments(Object.fromEntries(newAppointmentIds.map((id) => [id, true])))
+              returnToSummary()
+            }}
           />
         ) : (
           <CanceledAppointments
