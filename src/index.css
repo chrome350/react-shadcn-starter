@@ -369,7 +369,7 @@ button { font: inherit; -webkit-tap-highlight-color: transparent; }
 .event-one { top: 109px; height: 86px; }
 .event-two { top: 200px; height: 86px; }
 .event-three { top: 290px; height: 131px; }
-.tuesday-event-one { top: 109px; height: 176px; }
+.tuesday-event-one { top: 109px; height: 131px; }
 .tuesday-event-two { top: 380px; height: 42px; }
 
 .break-card {

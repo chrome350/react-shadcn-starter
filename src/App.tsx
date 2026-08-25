@@ -74,6 +74,7 @@ type AppointmentProps = {
   note?: string
   status?: AppointmentStatus
   details?: AppointmentDetails
+  showNewBadge?: boolean
 }
 
 type AppointmentStatus = "confirmed" | "pending" | "new" | "canceled"
@@ -130,7 +131,30 @@ const mondayAppointmentDetails = {
   },
 } satisfies Record<string, AppointmentDetails>
 
-function Appointment({ className, name = "Ангелина Петрова", service = "Маникюр, покрытие гель-лак, педикюр", compact, duration, note, status = "confirmed", details }: AppointmentProps) {
+const tuesdayAppointmentDetails = {
+  anastasia: {
+    name: "Анастасия Артемьева",
+    phone: "8 (926) 234-45-23",
+    initials: "АА",
+    date: "Вторник, 28 сентября",
+    time: "11:00–12:30 · 1 час 30 минут",
+    services: ["Маникюр аппаратный", "Покрытие гель-лак", "Педикюр"],
+    total: "7 500 ₽",
+  },
+  diana: {
+    name: "Диана",
+    phone: "8 (926) 234-45-23",
+    initials: "Д",
+    date: "Вторник, 28 сентября",
+    time: "14:00–14:30 · 30 минут",
+    services: ["Маникюр"],
+    total: "2 500 ₽",
+  },
+} satisfies Record<string, AppointmentDetails>
+
+function Appointment({ className, name = "Ангелина Петрова", service = "Маникюр, покрытие гель-лак, педикюр", compact, duration, note, status = "confirmed", details, showNewBadge }: AppointmentProps) {
+  const shouldShowNewBadge = showNewBadge ?? (status === "confirmed" || status === "new")
+
   return (
     <AppointmentDetailsDrawer
       status={status}
@@ -140,7 +164,7 @@ function Appointment({ className, name = "Ангелина Петрова", serv
           <span className="appointment__stripe" />
           <div className="appointment__head">
             <strong>{name}</strong>
-            {(status === "confirmed" || status === "new") && <span className="status-pill">НОВЫЙ</span>}
+            {shouldShowNewBadge && <span className="status-pill">НОВЫЙ</span>}
             {status === "pending" ? (
               <Clock2 className="status-check status-check--standalone" aria-label="Ожидает подтверждения" />
             ) : status === "canceled" ? (
@@ -282,7 +306,7 @@ function AppointmentDetailsDrawer({ trigger, status, details = defaultAppointmen
 
             <div className="appointment-details-body">
             <section className="services-card" aria-label="Услуги и стоимость">
-              <span>{details.services.length} услуги</span>
+              <span>{details.services.length === 1 ? "1 услуга" : `${details.services.length} услуги`}</span>
               {details.services.map((service) => <p key={service}>{service}</p>)}
               <i />
               <div><strong>Общая стоимость</strong><strong>{details.total}</strong></div>
@@ -817,11 +841,21 @@ export function App() {
             <>
               <Appointment
                 className="tuesday-event-one"
-                duration="14:00–15:30 · 2 часа · 7 500 ₽"
-                note="Хочет веселый летний дизайн, обещала показать референсы"
-                status="pending"
+                name="Анастасия Артемьева"
+                duration="11:00–12:30 · 1 час 30 минут · 7 500 ₽"
+                status="confirmed"
+                showNewBadge={false}
+                details={tuesdayAppointmentDetails.anastasia}
               />
-              <Appointment className="tuesday-event-two" compact status="canceled" />
+              <Appointment
+                className="tuesday-event-two"
+                name="Диана"
+                service="Маникюр"
+                compact
+                status="confirmed"
+                showNewBadge={false}
+                details={tuesdayAppointmentDetails.diana}
+              />
             </>
           ) : null}
         </div>
