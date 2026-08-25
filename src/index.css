@@ -357,14 +357,17 @@ button { font: inherit; -webkit-tap-highlight-color: transparent; }
 }
 
 .status-check { width: 11px !important; height: 11px !important; flex: 0 0 auto; stroke-width: 2; color: #9275a0; }
+.status-check--standalone { margin-left: auto; }
 .appointment p { margin: 2px 0 0; }
 .appointment__meta { color: #896f98; }
 .appointment__note { margin-top: 8px !important; color: #967ca5; font-style: italic; }
 .appointment--compact { padding-top: 5px; }
 .appointment--interactive { cursor: pointer; }
+.appointment--canceled .appointment__head strong,
+.appointment--canceled > p { color: #aa94b3; text-decoration: line-through; text-decoration-thickness: 1px; }
 
 .event-one { top: 109px; height: 86px; }
-.event-two { top: 200px; height: 42px; }
+.event-two { top: 200px; height: 86px; }
 .event-three { top: 290px; height: 131px; }
 .tuesday-event-one { top: 109px; height: 176px; }
 .tuesday-event-two { top: 380px; height: 42px; }
