@@ -148,7 +148,7 @@ const tuesdayAppointmentDetails = {
     initials: "Д",
     date: "Вторник, 28 сентября",
     time: "14:00–14:30 · 30 минут",
-    services: ["Маникюр"],
+    services: ["Ремонт ногтя"],
     total: "2 500 ₽",
   },
 } satisfies Record<string, AppointmentDetails>
@@ -773,7 +773,7 @@ function ConfirmationDrawer({ open, isStatic, selectedDate, viewedPages, hiddenP
 }
 
 export function App() {
-  const today = new Date()
+  const today = new Date(2026, 8, 22)
   const todayKey = dateKey(today)
   const week = getCurrentWeek(today)
   const [selectedDay, setSelectedDay] = useState(todayKey)
@@ -958,7 +958,7 @@ export function App() {
               <Appointment
                 className="tuesday-event-two"
                 name="Диана"
-                service="Маникюр"
+                service="Ремонт ногтя"
                 compact
                 status="confirmed"
                 showNewBadge={false}
