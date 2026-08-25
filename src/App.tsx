@@ -491,7 +491,7 @@ function CanceledAppointments({ onBack, onDeleteAll }: { onBack: () => void; onD
   )
 }
 
-function ConfirmationDrawer({ open, selectedDate, viewedPages, hiddenPages, onOpenChange, onOpenPage }: { open: boolean; selectedDate: Date; viewedPages: ViewedRecordPages; hiddenPages: ViewedRecordPages; onOpenChange: (open: boolean) => void; onOpenPage: (page: RecordsPage) => void }) {
+function ConfirmationDrawer({ open, isStatic, selectedDate, viewedPages, hiddenPages, onOpenChange, onOpenPage }: { open: boolean; isStatic: boolean; selectedDate: Date; viewedPages: ViewedRecordPages; hiddenPages: ViewedRecordPages; onOpenChange: (open: boolean) => void; onOpenPage: (page: RecordsPage) => void }) {
   const [dragOffset, setDragOffset] = useState(0)
   const [isDragging, setIsDragging] = useState(false)
   const dragStart = useRef(0)
@@ -580,6 +580,7 @@ function ConfirmationDrawer({ open, selectedDate, viewedPages, hiddenPages, onOp
         <Dialog.Content
           className="drawer-content"
           data-dragging={isDragging}
+          data-static={isStatic}
           style={{ "--drawer-drag-y": `${dragOffset}px` } as CSSProperties}
           onOpenAutoFocus={(event) => event.preventDefault()}
         >
@@ -668,6 +669,7 @@ export function App() {
   const [recordsPage, setRecordsPage] = useState<RecordsPage | null>(null)
   const [confirmedAppointments, setConfirmedAppointments] = useState<Record<string, boolean>>({})
   const [isSummaryOpen, setIsSummaryOpen] = useState(false)
+  const [isSummaryStatic, setIsSummaryStatic] = useState(false)
   const [viewedRecordPages, setViewedRecordPages] = useState<ViewedRecordPages>({ pending: false, new: false, canceled: false })
   const [completedRecordPages, setCompletedRecordPages] = useState<ViewedRecordPages>({ pending: false, new: false, canceled: false })
   const selectedDayIndex = week.findIndex((day) => day.key === selectedDay)
@@ -688,7 +690,13 @@ export function App() {
 
   const returnToSummary = () => {
     setRecordsPage(null)
+    setIsSummaryStatic(true)
     setIsSummaryOpen(true)
+  }
+
+  const handleSummaryOpenChange = (open: boolean) => {
+    if (!open) setIsSummaryStatic(false)
+    setIsSummaryOpen(open)
   }
 
   if (recordsPage) {
@@ -827,7 +835,7 @@ export function App() {
         </Button>
       )}
 
-      <ConfirmationDrawer open={isSummaryOpen} selectedDate={selectedDate} viewedPages={viewedRecordPages} hiddenPages={hiddenRecordPages} onOpenChange={setIsSummaryOpen} onOpenPage={openRecordsPage} />
+      <ConfirmationDrawer open={isSummaryOpen} isStatic={isSummaryStatic} selectedDate={selectedDate} viewedPages={viewedRecordPages} hiddenPages={hiddenRecordPages} onOpenChange={handleSummaryOpenChange} onOpenPage={openRecordsPage} />
 
       <nav className="bottom-nav" aria-label="Основная навигация">
         <div className="bottom-nav__group">
