@@ -554,7 +554,36 @@ function CanceledAppointments({ deleted, onBack, onDelete, onDeleteAll }: { dele
   )
 }
 
-function ConfirmationDrawer({ open, isStatic, selectedDate, viewedPages, hiddenPages, pendingCount, newCount, onOpenChange, onOpenPage, onMarkUnread }: { open: boolean; isStatic: boolean; selectedDate: Date; viewedPages: ViewedRecordPages; hiddenPages: ViewedRecordPages; pendingCount: number; newCount: number; onOpenChange: (open: boolean) => void; onOpenPage: (page: RecordsPage) => void; onMarkUnread: (page: RecordsPage) => void }) {
+function OccupancyInfoDrawer({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
+  return (
+    <Dialog.Root open={open} onOpenChange={onOpenChange}>
+      <Dialog.Portal>
+        <Dialog.Overlay className="drawer-overlay occupancy-info-overlay" />
+        <Dialog.Content className="drawer-content occupancy-info-drawer" onOpenAutoFocus={(event) => event.preventDefault()}>
+          <div className="drawer-handle" aria-hidden="true" />
+
+          <div className="occupancy-info-illustration" aria-hidden="true">
+            <svg viewBox="0 0 180 180">
+              <circle cx="79" cy="96" r="54" fill="none" stroke="currentColor" strokeWidth="20" strokeDasharray="250 90" transform="rotate(-78 79 96)" />
+              <circle cx="65" cy="79" r="13" fill="currentColor" />
+              <path d="M40 132 88 85a12 12 0 0 1 17 0l31 31a60 60 0 0 1-96 16Z" fill="currentColor" />
+              <path d="M130 22c5 18 10 23 28 28-18 5-23 10-28 28-5-18-10-23-28-28 18-5 23-10 28-28Z" fill="currentColor" />
+            </svg>
+          </div>
+
+          <div className="occupancy-info-copy">
+            <Dialog.Title>Загрузка показывает,<br />насколько заполнены ваши<br />окошки</Dialog.Title>
+            <Dialog.Description>Это процент времени из всех<br />созданных окошек, которое уже<br />заняли клиенты</Dialog.Description>
+          </div>
+
+          <Button className="occupancy-info-button" type="button" onClick={() => onOpenChange(false)}>Понятно</Button>
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
+  )
+}
+
+function ConfirmationDrawer({ open, isStatic, selectedDate, viewedPages, hiddenPages, pendingCount, newCount, onOpenChange, onOpenPage, onMarkUnread, onOpenOccupancy }: { open: boolean; isStatic: boolean; selectedDate: Date; viewedPages: ViewedRecordPages; hiddenPages: ViewedRecordPages; pendingCount: number; newCount: number; onOpenChange: (open: boolean) => void; onOpenPage: (page: RecordsPage) => void; onMarkUnread: (page: RecordsPage) => void; onOpenOccupancy: () => void }) {
   const [dragOffset, setDragOffset] = useState(0)
   const [isDragging, setIsDragging] = useState(false)
   const dragStart = useRef(0)
@@ -663,20 +692,20 @@ function ConfirmationDrawer({ open, isStatic, selectedDate, viewedPages, hiddenP
             </header>
 
             <section className="drawer-stats" aria-label="Статистика записей">
-            <article className="stat-card">
+            <button className="stat-card" type="button" onClick={onOpenOccupancy}>
               <span>Сегодня</span>
               <strong>5 записей</strong>
               <small>6 990 ₽</small>
               <p>Загрузка <b className="load-good">80%</b></p>
               <div className="progress-track"><i className="progress-good" /></div>
-            </article>
-            <article className="stat-card">
+            </button>
+            <button className="stat-card" type="button" onClick={onOpenOccupancy}>
               <span>Неделя</span>
               <strong>15 записей</strong>
               <small>46 990 ₽</small>
               <p>Загрузка <b className="load-low">15%</b></p>
               <div className="progress-track"><i className="progress-low" /></div>
-            </article>
+            </button>
             </section>
 
             <section className="important-list" aria-labelledby="important-title">
@@ -756,6 +785,7 @@ export function App() {
   const [acceptedNewAppointments, setAcceptedNewAppointments] = useState<Record<string, boolean>>({})
   const [deletedCanceledAppointments, setDeletedCanceledAppointments] = useState<Record<string, boolean>>({})
   const [isDeleteSnackbarVisible, setIsDeleteSnackbarVisible] = useState(false)
+  const [isOccupancyInfoOpen, setIsOccupancyInfoOpen] = useState(false)
   const selectedDayIndex = week.findIndex((day) => day.key === selectedDay)
   const selectedDate = week[selectedDayIndex]?.date ?? today
   const isToday = selectedDay === todayKey
@@ -964,7 +994,10 @@ export function App() {
         onOpenChange={handleSummaryOpenChange}
         onOpenPage={openRecordsPage}
         onMarkUnread={(page) => setViewedRecordPages((current) => ({ ...current, [page]: false }))}
+        onOpenOccupancy={() => setIsOccupancyInfoOpen(true)}
       />
+
+      <OccupancyInfoDrawer open={isOccupancyInfoOpen} onOpenChange={setIsOccupancyInfoOpen} />
 
       {isDeleteSnackbarVisible && <div className="records-snackbar" role="status">Записи удалены</div>}
 
