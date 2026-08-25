@@ -7,6 +7,7 @@ import {
   type ReactElement,
 } from "react"
 import * as Dialog from "@radix-ui/react-dialog"
+import { Toaster, toast } from "sonner"
 import {
   ArrowLeft,
   CalendarClock,
@@ -784,7 +785,6 @@ export function App() {
   const [completedRecordPages, setCompletedRecordPages] = useState<ViewedRecordPages>({ pending: false, new: false, canceled: false })
   const [acceptedNewAppointments, setAcceptedNewAppointments] = useState<Record<string, boolean>>({})
   const [deletedCanceledAppointments, setDeletedCanceledAppointments] = useState<Record<string, boolean>>({})
-  const [isDeleteSnackbarVisible, setIsDeleteSnackbarVisible] = useState(false)
   const [isOccupancyInfoOpen, setIsOccupancyInfoOpen] = useState(false)
   const selectedDayIndex = week.findIndex((day) => day.key === selectedDay)
   const selectedDate = week[selectedDayIndex]?.date ?? today
@@ -816,12 +816,6 @@ export function App() {
     setIsSummaryOpen(open)
   }
 
-  useEffect(() => {
-    if (!isDeleteSnackbarVisible) return
-    const timeout = window.setTimeout(() => setIsDeleteSnackbarVisible(false), 3000)
-    return () => window.clearTimeout(timeout)
-  }, [isDeleteSnackbarVisible])
-
   if (recordsPage) {
     return (
       <main className="phone-shell records-page-shell">
@@ -852,8 +846,8 @@ export function App() {
             onDeleteAll={() => {
               setDeletedCanceledAppointments(Object.fromEntries(canceledAppointments.map((appointment) => [appointment.id, true])))
               setCompletedRecordPages((current) => ({ ...current, canceled: true }))
-              setIsDeleteSnackbarVisible(true)
               returnToSummary()
+              toast("Записи удалены", { duration: 3000 })
             }}
           />
         )}
@@ -999,7 +993,7 @@ export function App() {
 
       <OccupancyInfoDrawer open={isOccupancyInfoOpen} onOpenChange={setIsOccupancyInfoOpen} />
 
-      {isDeleteSnackbarVisible && <div className="records-snackbar" role="status">Записи удалены</div>}
+      <Toaster position="bottom-center" toastOptions={{ unstyled: true, classNames: { toast: "records-toast" } }} />
 
       <nav className="bottom-nav" aria-label="Основная навигация">
         <div className="bottom-nav__group">

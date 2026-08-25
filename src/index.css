@@ -472,21 +472,17 @@ button { font: inherit; -webkit-tap-highlight-color: transparent; }
 
 .drawer-content::-webkit-scrollbar { display: none; }
 
-.records-snackbar {
-  z-index: 40;
+[data-sonner-toaster] { z-index: 40 !important; }
+
+.records-toast {
   color: #fff;
   background: #101012;
   border-radius: 12px;
-  width: calc(100% - 32px);
-  max-width: 408px;
+  width: min(calc(100vw - 32px), 408px);
   min-height: 48px;
   padding: 13px 16px;
   font-size: 15px;
   line-height: 22px;
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
   box-shadow: 0 10px 30px #1111142b;
 }
 
