@@ -556,11 +556,95 @@ function CanceledAppointments({ deleted, onBack, onDelete, onDeleteAll }: { dele
 }
 
 function OccupancyInfoDrawer({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
+  const [dragOffset, setDragOffset] = useState(0)
+  const [isDragging, setIsDragging] = useState(false)
+  const dragStart = useRef(0)
+  const dragStartedAt = useRef(0)
+  const dragOffsetRef = useRef(0)
+  const isDraggingRef = useRef(false)
+  const isClosingRef = useRef(false)
+
+  const resetDrag = () => {
+    dragOffsetRef.current = 0
+    isDraggingRef.current = false
+    isClosingRef.current = false
+    setDragOffset(0)
+    setIsDragging(false)
+  }
+
+  const animateClose = () => {
+    if (isClosingRef.current) return
+    isClosingRef.current = true
+    isDraggingRef.current = false
+    setIsDragging(false)
+    setDragOffset(window.innerHeight)
+    window.setTimeout(() => {
+      onOpenChange(false)
+      resetDrag()
+    }, 180)
+  }
+
+  const handleOpenChange = (nextOpen: boolean) => {
+    if (!nextOpen) resetDrag()
+    onOpenChange(nextOpen)
+  }
+
+  const handleDragStart = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (isClosingRef.current) return
+    if ((event.target as HTMLElement).closest(".occupancy-info-button")) return
+    dragStart.current = event.clientY
+    dragStartedAt.current = performance.now()
+    dragOffsetRef.current = 0
+    isDraggingRef.current = true
+    setIsDragging(true)
+    event.preventDefault()
+  }
+
+  useEffect(() => {
+    const handlePointerMove = (event: PointerEvent) => {
+      if (!isDraggingRef.current) return
+      const nextOffset = Math.max(0, event.clientY - dragStart.current)
+      dragOffsetRef.current = nextOffset
+      setDragOffset(nextOffset)
+    }
+
+    const handlePointerEnd = () => {
+      if (!isDraggingRef.current) return
+      const elapsed = performance.now() - dragStartedAt.current
+      const shouldClose = dragOffsetRef.current >= 96 || (dragOffsetRef.current >= 42 && elapsed < 260)
+      isDraggingRef.current = false
+      setIsDragging(false)
+
+      if (shouldClose) {
+        animateClose()
+        return
+      }
+
+      dragOffsetRef.current = 0
+      setDragOffset(0)
+    }
+
+    window.addEventListener("pointermove", handlePointerMove)
+    window.addEventListener("pointerup", handlePointerEnd)
+    window.addEventListener("pointercancel", handlePointerEnd)
+    return () => {
+      window.removeEventListener("pointermove", handlePointerMove)
+      window.removeEventListener("pointerup", handlePointerEnd)
+      window.removeEventListener("pointercancel", handlePointerEnd)
+    }
+  }, [])
+
   return (
-    <Dialog.Root open={open} onOpenChange={onOpenChange}>
+    <Dialog.Root open={open} onOpenChange={handleOpenChange}>
       <Dialog.Portal>
         <Dialog.Overlay className="drawer-overlay occupancy-info-overlay" />
-        <Dialog.Content className="drawer-content occupancy-info-drawer" onOpenAutoFocus={(event) => event.preventDefault()}>
+        <Dialog.Content
+          className="drawer-content occupancy-info-drawer"
+          data-dragging={isDragging}
+          style={{ "--drawer-drag-y": `${dragOffset}px` } as CSSProperties}
+          onPointerDown={handleDragStart}
+          onOpenAutoFocus={(event) => event.preventDefault()}
+        >
           <div className="drawer-handle" aria-hidden="true" />
 
           <div className="occupancy-info-illustration" aria-hidden="true">
@@ -577,7 +661,7 @@ function OccupancyInfoDrawer({ open, onOpenChange }: { open: boolean; onOpenChan
             <Dialog.Description>Это процент времени из всех<br />созданных окошек, которое уже<br />заняли клиенты</Dialog.Description>
           </div>
 
-          <Button className="occupancy-info-button" type="button" onClick={() => onOpenChange(false)}>Понятно</Button>
+          <Button className="occupancy-info-button" type="button" onClick={animateClose}>Понятно</Button>
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>
