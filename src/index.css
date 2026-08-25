@@ -616,29 +616,29 @@ button { font: inherit; -webkit-tap-highlight-color: transparent; }
 
 .occupancy-info-drawer {
   z-index: 33;
+  border-radius: 28px;
+  flex-direction: column;
   width: calc(100vw - 24px);
   max-width: none;
-  height: calc(100svh - 24px);
-  bottom: 12px;
-  border-radius: 28px;
-  padding: 24px 28px 32px;
+  height: 462px;
+  padding: 20px 20px 40px;
   display: flex;
-  flex-direction: column;
+  bottom: 12px;
   overflow: hidden;
 }
 
 .occupancy-info-illustration {
   color: #e7e7e7;
-  height: 190px;
-  display: flex;
   flex-direction: row;
   align-items: center;
+  height: 156px;
+  display: flex;
 }
 
 .occupancy-info-illustration svg { display: block; width: 100%; height: 100%; }
 .occupancy-info-copy { margin-top: 6px; }
-.occupancy-info-copy h2 { margin: 0; font-size: 25px; line-height: 1.28; letter-spacing: -0.5px; font-weight: 700; }
-.occupancy-info-copy p { color: #7d7a7f; margin: 14px 0 0; font-size: 20px; line-height: 1.38; }
+.occupancy-info-copy h2 { letter-spacing: -0.5px; margin: 0; font-size: 21px; font-weight: 700; line-height: 26px; }
+.occupancy-info-copy p { color: #7d7a7f; margin: 14px 0 0; font-size: 17px; line-height: 22px; }
 
 .occupancy-info-button {
   width: 100%;
