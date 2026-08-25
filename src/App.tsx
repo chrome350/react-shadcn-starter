@@ -673,6 +673,7 @@ export function App() {
                 aria-label={day.label}
                 aria-pressed={isActive}
                 data-dots={day.dots || undefined}
+                style={{ "--progress-angle": `${day.dots * 72}deg` } as CSSProperties}
                 onClick={() => setSelectedDay(day.key)}
               >
                 <span className="weekday">{day.weekday}</span>
