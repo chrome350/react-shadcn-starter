@@ -615,6 +615,7 @@ button { font: inherit; -webkit-tap-highlight-color: transparent; }
 
 .important-list button > svg:first-child { color: #fff; fill: #fff; background: #8150ff; border-radius: 50%; width: 24px; height: 24px; padding: 6px; }
 .important-list button.is-viewed > svg:first-child { background: #e0e0e2; }
+.important-list button.is-viewed > svg:first-child[role="button"] { cursor: pointer; }
 .important-list button > svg:last-child { width: 17px; color: #d1ced3; }
 .important-list mark,
 .advice-card mark { padding: 1px 4px; border-radius: 4px; color: #7c35ee; background: #efe3ff; }

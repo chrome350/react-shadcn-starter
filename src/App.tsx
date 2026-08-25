@@ -336,8 +336,32 @@ function AppointmentDetailsDrawer({ trigger, status, details = defaultAppointmen
 }
 
 const pendingAppointments = [
-  { id: "angelina", name: "Ангелина Петрова", time: "16:00–17:00" },
-  { id: "olga", name: "Ольга Будкова", time: "17:00–18:00" },
+  {
+    id: "olga",
+    name: "Ольга Будкова",
+    service: "Маникюр, покрытие гель-лак",
+    time: "11:00–12:00",
+    duration: "1 час",
+    total: "3 500 ₽",
+    details: mondayAppointmentDetails.olga,
+  },
+  {
+    id: "kristina",
+    name: "Кристина Петрова",
+    service: "Маникюр, педикюр",
+    time: "17:00–18:00",
+    duration: "1 час",
+    total: "5 500 ₽",
+    details: {
+      name: "Кристина Петрова",
+      phone: "8 (926) 234-45-23",
+      initials: "КП",
+      date: "Понедельник, 27 сентября",
+      time: "17:00–18:00 · 1 час",
+      services: ["Маникюр", "Педикюр"],
+      total: "5 500 ₽",
+    } satisfies AppointmentDetails,
+  },
 ]
 
 function PendingConfirmations({
@@ -359,14 +383,15 @@ function PendingConfirmations({
       <AppointmentDetailsDrawer
         key={appointment.id}
         status={isConfirmed ? "confirmed" : "pending"}
+        details={appointment.details}
         trigger={<article className="pending-card appointment--interactive">
         <span className="pending-card__stripe" />
         <div className="pending-card__head">
           <strong>{appointment.name}</strong>
           <span>НОВЫЙ</span>
         </div>
-        <p>Маникюр, покрытие гель-лак, педикюр</p>
-        <p className="pending-card__meta">{appointment.time} · 1 час · 7 500 ₽</p>
+        <p>{appointment.service}</p>
+        <p className="pending-card__meta">{appointment.time} · {appointment.duration} · {appointment.total}</p>
         <div className="pending-card__actions">
           <Button variant="ghost" className="contact-button" onClick={(event) => event.stopPropagation()}>Связаться</Button>
           <Button
@@ -432,7 +457,13 @@ const newAppointmentGroups = [
   },
 ]
 
-function NewAppointments({ onBack, onAcceptAll }: { onBack: () => void; onAcceptAll: () => void }) {
+const newAppointmentIds = newAppointmentGroups.flatMap((group) => group.appointments.map((appointment) => appointment.id))
+
+function NewAppointments({ accepted, onBack, onAccept, onAcceptAll }: { accepted: Record<string, boolean>; onBack: () => void; onAccept: (id: string) => void; onAcceptAll: () => void }) {
+  const visibleGroups = newAppointmentGroups
+    .map((group) => ({ ...group, appointments: group.appointments.filter((appointment) => !accepted[appointment.id]) }))
+    .filter((group) => group.appointments.length > 0)
+
   return (
     <section className="new-screen">
       <header className="pending-header">
@@ -443,7 +474,7 @@ function NewAppointments({ onBack, onAcceptAll }: { onBack: () => void; onAccept
       </header>
 
       <div className="new-groups">
-        {newAppointmentGroups.map((group) => (
+        {visibleGroups.map((group) => (
           <section className="new-group" key={group.date} aria-labelledby={`date-${group.date}`}>
             <h3 id={`date-${group.date}`}>{group.date}</h3>
             <div className="new-list">
@@ -459,7 +490,10 @@ function NewAppointments({ onBack, onAcceptAll }: { onBack: () => void; onAccept
                   </div>
                   <p>Маникюр, покрытие гель-лак, педикюр</p>
                   <p className="pending-card__meta">{appointment.time} · {appointment.duration} · 7 500 ₽</p>
-                  <Button variant="ghost" className="new-card__accept" onClick={(event) => event.stopPropagation()}>Принять</Button>
+                  <Button variant="ghost" className="new-card__accept" onClick={(event) => {
+                    event.stopPropagation()
+                    onAccept(appointment.id)
+                  }}>Принять</Button>
                   </article>}
                 />
               ))}
@@ -478,7 +512,9 @@ const canceledAppointments = [
   { id: "canceled-olga", name: "Ольга Будкова", time: "28 сент, 17:00–18:00" },
 ]
 
-function CanceledAppointments({ onBack, onDeleteAll }: { onBack: () => void; onDeleteAll: () => void }) {
+function CanceledAppointments({ deleted, onBack, onDelete, onDeleteAll }: { deleted: Record<string, boolean>; onBack: () => void; onDelete: (id: string) => void; onDeleteAll: () => void }) {
+  const visibleAppointments = canceledAppointments.filter((appointment) => !deleted[appointment.id])
+
   return (
     <section className="new-screen canceled-screen">
       <header className="pending-header">
@@ -489,7 +525,7 @@ function CanceledAppointments({ onBack, onDeleteAll }: { onBack: () => void; onD
       </header>
 
       <div className="canceled-list">
-        {canceledAppointments.map((appointment) => (
+        {visibleAppointments.map((appointment) => (
           <AppointmentDetailsDrawer
             key={appointment.id}
             status="canceled"
@@ -502,7 +538,10 @@ function CanceledAppointments({ onBack, onDeleteAll }: { onBack: () => void; onD
             <p className="canceled-card__details">Маникюр, покрытие гель-лак, педикюр</p>
             <p className="pending-card__meta canceled-card__details">{appointment.time}</p>
             <div className="canceled-card__actions">
-              <Button variant="ghost" className="delete-record-button" onClick={(event) => event.stopPropagation()}>Удалить</Button>
+              <Button variant="ghost" className="delete-record-button" onClick={(event) => {
+                event.stopPropagation()
+                onDelete(appointment.id)
+              }}>Удалить</Button>
               <Button variant="ghost" className="restore-record-button" onClick={(event) => event.stopPropagation()}>В расписание</Button>
             </div>
             </article>}
@@ -515,7 +554,7 @@ function CanceledAppointments({ onBack, onDeleteAll }: { onBack: () => void; onD
   )
 }
 
-function ConfirmationDrawer({ open, isStatic, selectedDate, viewedPages, hiddenPages, onOpenChange, onOpenPage }: { open: boolean; isStatic: boolean; selectedDate: Date; viewedPages: ViewedRecordPages; hiddenPages: ViewedRecordPages; onOpenChange: (open: boolean) => void; onOpenPage: (page: RecordsPage) => void }) {
+function ConfirmationDrawer({ open, isStatic, selectedDate, viewedPages, hiddenPages, pendingCount, newCount, onOpenChange, onOpenPage, onMarkUnread }: { open: boolean; isStatic: boolean; selectedDate: Date; viewedPages: ViewedRecordPages; hiddenPages: ViewedRecordPages; pendingCount: number; newCount: number; onOpenChange: (open: boolean) => void; onOpenPage: (page: RecordsPage) => void; onMarkUnread: (page: RecordsPage) => void }) {
   const [dragOffset, setDragOffset] = useState(0)
   const [isDragging, setIsDragging] = useState(false)
   const dragStart = useRef(0)
@@ -644,11 +683,26 @@ function ConfirmationDrawer({ open, isStatic, selectedDate, viewedPages, hiddenP
               <h2 id="important-title">Важно!</h2>
               {sortedImportantPages.map((page) => (
                 <button className={viewedPages[page] ? "is-viewed" : undefined} key={page} type="button" onClick={() => openPage(page)}>
-                  <Zap />
+                  <Zap
+                    role={viewedPages[page] ? "button" : undefined}
+                    tabIndex={viewedPages[page] ? 0 : undefined}
+                    aria-label={viewedPages[page] ? "Отметить как новое" : undefined}
+                    onClick={(event) => {
+                      if (!viewedPages[page]) return
+                      event.stopPropagation()
+                      onMarkUnread(page)
+                    }}
+                    onKeyDown={(event) => {
+                      if (!viewedPages[page] || (event.key !== "Enter" && event.key !== " ")) return
+                      event.preventDefault()
+                      event.stopPropagation()
+                      onMarkUnread(page)
+                    }}
+                  />
                   {page === "pending" ? (
-                    <span>Подтвердите <mark>2 записи</mark></span>
+                    <span>Подтвердите <mark>{pendingCount} {pendingCount === 1 ? "запись" : "записи"}</mark></span>
                   ) : page === "new" ? (
-                    <span>У вас <mark>2 новые</mark> записи</span>
+                    <span>У вас <mark>{newCount} {newCount === 1 ? "новая" : "новые"}</mark> {newCount === 1 ? "запись" : "записи"}</span>
                   ) : (
                     <span>Клиент <mark>отменил</mark> запись</span>
                   )}
@@ -696,15 +750,20 @@ export function App() {
   const [isSummaryStatic, setIsSummaryStatic] = useState(false)
   const [viewedRecordPages, setViewedRecordPages] = useState<ViewedRecordPages>({ pending: false, new: false, canceled: false })
   const [completedRecordPages, setCompletedRecordPages] = useState<ViewedRecordPages>({ pending: false, new: false, canceled: false })
+  const [acceptedNewAppointments, setAcceptedNewAppointments] = useState<Record<string, boolean>>({})
+  const [deletedCanceledAppointments, setDeletedCanceledAppointments] = useState<Record<string, boolean>>({})
   const selectedDayIndex = week.findIndex((day) => day.key === selectedDay)
   const selectedDate = week[selectedDayIndex]?.date ?? today
   const isToday = selectedDay === todayKey
   const monthTitle = new Intl.DateTimeFormat("ru-RU", { month: "long" }).format(selectedDate)
   const scheduleDate = new Intl.DateTimeFormat("ru-RU", { day: "numeric", month: "long" }).format(selectedDate)
   const allPendingAppointmentsConfirmed = pendingAppointments.every((appointment) => confirmedAppointments[appointment.id])
+  const pendingAppointmentsCount = pendingAppointments.filter((appointment) => !confirmedAppointments[appointment.id]).length
+  const newAppointmentsCount = newAppointmentIds.filter((id) => !acceptedNewAppointments[id]).length
   const hiddenRecordPages: ViewedRecordPages = {
     ...completedRecordPages,
     pending: allPendingAppointmentsConfirmed,
+    new: newAppointmentsCount === 0,
   }
 
   const openRecordsPage = (page: RecordsPage) => {
@@ -734,13 +793,23 @@ export function App() {
           />
         ) : recordsPage === "new" ? (
           <NewAppointments
+            accepted={acceptedNewAppointments}
             onBack={returnToSummary}
-            onAcceptAll={() => setCompletedRecordPages((current) => ({ ...current, new: true }))}
+            onAccept={(id) => setAcceptedNewAppointments((current) => ({ ...current, [id]: true }))}
+            onAcceptAll={() => setAcceptedNewAppointments(Object.fromEntries(newAppointmentIds.map((id) => [id, true])))}
           />
         ) : (
           <CanceledAppointments
+            deleted={deletedCanceledAppointments}
             onBack={returnToSummary}
-            onDeleteAll={() => setCompletedRecordPages((current) => ({ ...current, canceled: true }))}
+            onDelete={(id) => {
+              setDeletedCanceledAppointments((current) => ({ ...current, [id]: true }))
+              setCompletedRecordPages((current) => ({ ...current, canceled: true }))
+            }}
+            onDeleteAll={() => {
+              setDeletedCanceledAppointments(Object.fromEntries(canceledAppointments.map((appointment) => [appointment.id, true])))
+              setCompletedRecordPages((current) => ({ ...current, canceled: true }))
+            }}
           />
         )}
       </main>
@@ -869,7 +938,18 @@ export function App() {
         </Button>
       )}
 
-      <ConfirmationDrawer open={isSummaryOpen} isStatic={isSummaryStatic} selectedDate={selectedDate} viewedPages={viewedRecordPages} hiddenPages={hiddenRecordPages} onOpenChange={handleSummaryOpenChange} onOpenPage={openRecordsPage} />
+      <ConfirmationDrawer
+        open={isSummaryOpen}
+        isStatic={isSummaryStatic}
+        selectedDate={selectedDate}
+        viewedPages={viewedRecordPages}
+        hiddenPages={hiddenRecordPages}
+        pendingCount={pendingAppointmentsCount}
+        newCount={newAppointmentsCount}
+        onOpenChange={handleSummaryOpenChange}
+        onOpenPage={openRecordsPage}
+        onMarkUnread={(page) => setViewedRecordPages((current) => ({ ...current, [page]: false }))}
+      />
 
       <nav className="bottom-nav" aria-label="Основная навигация">
         <div className="bottom-nav__group">
