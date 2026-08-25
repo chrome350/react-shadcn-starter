@@ -67,27 +67,89 @@ const hours = [
 
 type AppointmentProps = {
   className: string
+  name?: string
+  service?: string
   compact?: boolean
   duration?: string
   note?: string
   status?: AppointmentStatus
+  details?: AppointmentDetails
 }
 
 type AppointmentStatus = "confirmed" | "pending" | "new" | "canceled"
 
-function Appointment({ className, compact, duration, note, status = "confirmed" }: AppointmentProps) {
+type AppointmentDetails = {
+  name: string
+  phone: string
+  initials: string
+  date: string
+  time: string
+  services: string[]
+  total: string
+  comment?: string
+}
+
+const defaultAppointmentDetails: AppointmentDetails = {
+  name: "Ольга Будкова",
+  phone: "8 (926) 234-45-23",
+  initials: "ОБ",
+  date: "Понедельник, 27 сентября",
+  time: "16:00–16:45 · 45 минут",
+  services: ["Маникюр аппаратный", "Снятие гель-лака"],
+  total: "3 500 ₽",
+}
+
+const mondayAppointmentDetails = {
+  olga: {
+    name: "Ольга Будкова",
+    phone: "8 (926) 234-45-23",
+    initials: "ОБ",
+    date: "Понедельник, 27 сентября",
+    time: "11:00–12:00 · 1 час",
+    services: ["Маникюр аппаратный", "Покрытие гель-лак"],
+    total: "3 500 ₽",
+  },
+  angelina: {
+    name: "Ангелина Петрова",
+    phone: "8 (926) 635-23-25",
+    initials: "АП",
+    date: "Понедельник, 27 сентября",
+    time: "12:00–13:00 · 1 час",
+    services: ["Маникюр аппаратный", "Покрытие гель-лак"],
+    total: "3 500 ₽",
+  },
+  valentina: {
+    name: "Валентина Демидова",
+    phone: "8 (926) 234-45-23",
+    initials: "ВД",
+    date: "Понедельник, 27 сентября",
+    time: "13:00–14:30 · 1 час 30 минут",
+    services: ["Маникюр аппаратный", "Покрытие гель-лак", "Педикюр"],
+    total: "7 500 ₽",
+    comment: "Хочет веселый летний дизайн, обещала показать референсы",
+  },
+} satisfies Record<string, AppointmentDetails>
+
+function Appointment({ className, name = "Ангелина Петрова", service = "Маникюр, покрытие гель-лак, педикюр", compact, duration, note, status = "confirmed", details }: AppointmentProps) {
   return (
     <AppointmentDetailsDrawer
       status={status}
+      details={details}
       trigger={(
-        <article className={`appointment appointment--interactive ${compact ? "appointment--compact" : ""} ${className}`}>
+        <article className={`appointment appointment--interactive appointment--${status} ${compact ? "appointment--compact" : ""} ${className}`}>
           <span className="appointment__stripe" />
           <div className="appointment__head">
-            <strong>Ангелина Петрова</strong>
-            <span className="status-pill">НОВЫЙ</span>
-            <CheckCircle2 className="status-check" aria-label="Подтверждено" />
+            <strong>{name}</strong>
+            {(status === "confirmed" || status === "new") && <span className="status-pill">НОВЫЙ</span>}
+            {status === "pending" ? (
+              <Clock2 className="status-check status-check--standalone" aria-label="Ожидает подтверждения" />
+            ) : status === "canceled" ? (
+              <CircleMinus className="status-check status-check--standalone" aria-label="Отменено" />
+            ) : (
+              <CheckCircle2 className="status-check" aria-label="Подтверждено" />
+            )}
           </div>
-          <p>Маникюр, покрытие гель-лак, педикюр</p>
+          <p>{service}</p>
           {duration && <p className="appointment__meta">{duration}</p>}
           {note && <p className="appointment__note">{note}</p>}
         </article>
@@ -109,9 +171,9 @@ function BreakCard() {
   )
 }
 
-function AppointmentDetailsDrawer({ trigger, status }: { trigger: ReactElement; status: AppointmentStatus }) {
+function AppointmentDetailsDrawer({ trigger, status, details = defaultAppointmentDetails }: { trigger: ReactElement; status: AppointmentStatus; details?: AppointmentDetails }) {
   const [open, setOpen] = useState(false)
-  const [comment, setComment] = useState("")
+  const [comment, setComment] = useState(details.comment ?? "")
   const [dragOffset, setDragOffset] = useState(0)
   const [isDragging, setIsDragging] = useState(false)
   const dragStart = useRef(0)
@@ -119,8 +181,8 @@ function AppointmentDetailsDrawer({ trigger, status }: { trigger: ReactElement; 
   const dragOffsetRef = useRef(0)
   const isDraggingRef = useRef(false)
   const statusContent = {
-    confirmed: { label: "Клиент подтвердил запись", icon: <CircleCheck /> },
-    pending: { label: "Ждём подтверждения клиента", icon: <Clock2 /> },
+    confirmed: { label: "Клиент подтвердил визит", icon: <CircleCheck /> },
+    pending: { label: "Ждем подтверждения клиента", icon: <Clock2 /> },
     new: { label: "Новая запись", icon: <Plus /> },
     canceled: { label: "Клиент отменил запись", icon: <CircleMinus /> },
   }[status]
@@ -203,28 +265,27 @@ function AppointmentDetailsDrawer({ trigger, status }: { trigger: ReactElement; 
             <div className="appointment-summary">
             <header className="client-header">
               <div>
-                <Dialog.Title>Ольга Будкова</Dialog.Title>
-                <a href="tel:+79262344523">8 (926) 234-45-23</a>
+                <Dialog.Title>{details.name}</Dialog.Title>
+                <a href={`tel:${details.phone.replace(/\D/g, "")}`}>{details.phone}</a>
                 <p className={`appointment-status appointment-status--${status}`}>
                   {statusContent.icon}{statusContent.label}
                 </p>
               </div>
-              <span className="client-avatar">ОБ</span>
+              <span className="client-avatar">{details.initials}</span>
             </header>
 
             <section className={`appointment-date ${status === "canceled" ? "appointment-date--canceled" : ""}`} aria-label="Дата и время записи">
-              <p>Понедельник, 27 сентября</p>
-              <strong>16:00–16:45 · 45 минут</strong>
+              <p>{details.date}</p>
+              <strong>{details.time}</strong>
             </section>
           </div>
 
             <div className="appointment-details-body">
             <section className="services-card" aria-label="Услуги и стоимость">
-              <span>2 услуги</span>
-              <p>Маникюр аппаратный</p>
-              <p>Снятие гель-лака</p>
+              <span>{details.services.length} услуги</span>
+              {details.services.map((service) => <p key={service}>{service}</p>)}
               <i />
-              <div><strong>Общая стоимость</strong><strong>3 500 ₽</strong></div>
+              <div><strong>Общая стоимость</strong><strong>{details.total}</strong></div>
             </section>
 
             <section className="comment-card" aria-label="Комментарий">
@@ -720,15 +781,27 @@ export function App() {
             <>
               <Appointment
                 className="event-one"
-                duration="11:00–12:00 · 1 час · 7 500 ₽"
-                note="Хочет веселый летний дизайн, обещала показать референсы"
+                name="Ольга Будкова"
+                service="Маникюр, покрытие гель-лак"
+                duration="11:00–12:00 · 1 час · 3 500 ₽"
+                status="pending"
+                details={mondayAppointmentDetails.olga}
               />
-              <Appointment className="event-two" compact status="pending" />
+              <Appointment
+                className="event-two"
+                name="Ангелина Петрова"
+                service="Маникюр, покрытие гель-лак"
+                duration="12:00–13:00 · 1 час · 3 500 ₽"
+                status="canceled"
+                details={mondayAppointmentDetails.angelina}
+              />
               <Appointment
                 className="event-three"
+                name="Валентина Демидова"
                 duration="13:00–14:30 · 1 час 30 минут · 7 500 ₽"
                 note="Хочет веселый летний дизайн, обещала показать референсы"
-                status="canceled"
+                status="confirmed"
+                details={mondayAppointmentDetails.valentina}
               />
               <BreakCard />
             </>
