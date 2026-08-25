@@ -30,6 +30,7 @@ import { Button } from "@/components/ui/button"
 const weekdayLetters = ["П", "В", "С", "Ч", "П", "С", "В"]
 type RecordsPage = "pending" | "new" | "canceled"
 type ViewedRecordPages = Record<RecordsPage, boolean>
+const importantPageOrder: RecordsPage[] = ["pending", "new", "canceled"]
 
 function dateKey(date: Date) {
   const year = date.getFullYear()
@@ -420,6 +421,10 @@ function ConfirmationDrawer({ open, selectedDate, viewedPages, onOpenChange, onO
   const isDraggingRef = useRef(false)
   const weekday = new Intl.DateTimeFormat("ru-RU", { weekday: "long" }).format(selectedDate).toUpperCase()
   const date = new Intl.DateTimeFormat("ru-RU", { day: "numeric", month: "long" }).format(selectedDate)
+  const sortedImportantPages = [
+    ...importantPageOrder.filter((page) => !viewedPages[page]),
+    ...importantPageOrder.filter((page) => viewedPages[page]),
+  ]
 
   const resetDrag = () => {
     dragOffsetRef.current = 0
@@ -532,9 +537,19 @@ function ConfirmationDrawer({ open, selectedDate, viewedPages, onOpenChange, onO
 
             <section className="important-list" aria-labelledby="important-title">
               <h2 id="important-title">Важно!</h2>
-              <button className={viewedPages.pending ? "is-viewed" : undefined} type="button" onClick={() => openPage("pending")}><Zap /><span>Подтвердите <mark>2 записи</mark></span><ChevronRight /></button>
-              <button className={viewedPages.new ? "is-viewed" : undefined} type="button" onClick={() => openPage("new")}><Zap /><span>У вас <mark>2 новые</mark> записи</span><ChevronRight /></button>
-              <button className={viewedPages.canceled ? "is-viewed" : undefined} type="button" onClick={() => openPage("canceled")}><Zap /><span>Клиент <mark>отменил</mark> запись</span><ChevronRight /></button>
+              {sortedImportantPages.map((page) => (
+                <button className={viewedPages[page] ? "is-viewed" : undefined} key={page} type="button" onClick={() => openPage(page)}>
+                  <Zap />
+                  {page === "pending" ? (
+                    <span>Подтвердите <mark>2 записи</mark></span>
+                  ) : page === "new" ? (
+                    <span>У вас <mark>2 новые</mark> записи</span>
+                  ) : (
+                    <span>Клиент <mark>отменил</mark> запись</span>
+                  )}
+                  <ChevronRight />
+                </button>
+              ))}
             </section>
 
             <section className="drawer-feed" aria-label="Советы">
