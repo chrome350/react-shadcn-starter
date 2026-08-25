@@ -739,7 +739,12 @@ button { font: inherit; -webkit-tap-highlight-color: transparent; }
 .arrival-switch > svg { width: 24px !important; height: 24px !important; color: #00c853; fill: #00c853; stroke: #fff; stroke-width: 2px; }
 
 .confirmed-appointments { margin-top: 24px; }
-.confirmed-appointments h3 { margin: 0 0 14px 24px; font-size: 21px; line-height: 1; font-weight: 650; }
+.confirmed-appointments h3 {
+  margin: 0 28px 12px;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 22px;
+}
 
 .new-screen {
   min-height: 100%;
