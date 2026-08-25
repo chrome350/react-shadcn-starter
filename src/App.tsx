@@ -755,6 +755,7 @@ export function App() {
   const [completedRecordPages, setCompletedRecordPages] = useState<ViewedRecordPages>({ pending: false, new: false, canceled: false })
   const [acceptedNewAppointments, setAcceptedNewAppointments] = useState<Record<string, boolean>>({})
   const [deletedCanceledAppointments, setDeletedCanceledAppointments] = useState<Record<string, boolean>>({})
+  const [isDeleteSnackbarVisible, setIsDeleteSnackbarVisible] = useState(false)
   const selectedDayIndex = week.findIndex((day) => day.key === selectedDay)
   const selectedDate = week[selectedDayIndex]?.date ?? today
   const isToday = selectedDay === todayKey
@@ -784,6 +785,12 @@ export function App() {
     if (!open) setIsSummaryStatic(false)
     setIsSummaryOpen(open)
   }
+
+  useEffect(() => {
+    if (!isDeleteSnackbarVisible) return
+    const timeout = window.setTimeout(() => setIsDeleteSnackbarVisible(false), 3000)
+    return () => window.clearTimeout(timeout)
+  }, [isDeleteSnackbarVisible])
 
   if (recordsPage) {
     return (
@@ -815,6 +822,8 @@ export function App() {
             onDeleteAll={() => {
               setDeletedCanceledAppointments(Object.fromEntries(canceledAppointments.map((appointment) => [appointment.id, true])))
               setCompletedRecordPages((current) => ({ ...current, canceled: true }))
+              setIsDeleteSnackbarVisible(true)
+              returnToSummary()
             }}
           />
         )}
@@ -956,6 +965,8 @@ export function App() {
         onOpenPage={openRecordsPage}
         onMarkUnread={(page) => setViewedRecordPages((current) => ({ ...current, [page]: false }))}
       />
+
+      {isDeleteSnackbarVisible && <div className="records-snackbar" role="status">Записи удалены</div>}
 
       <nav className="bottom-nav" aria-label="Основная навигация">
         <div className="bottom-nav__group">
