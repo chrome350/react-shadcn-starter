@@ -196,7 +196,7 @@ button { font: inherit; -webkit-tap-highlight-color: transparent; }
   inset: -1px;
   z-index: -1;
   border-radius: inherit;
-  background: conic-gradient(#c652f7 0deg 92deg, #e8e6e9 92deg 360deg);
+  background: conic-gradient(#c652f7 0deg var(--progress-angle), #e8e6e9 var(--progress-angle) 360deg);
 }
 
 .week-day--progress .date-circle::after {
@@ -223,8 +223,20 @@ button { font: inherit; -webkit-tap-highlight-color: transparent; }
   box-shadow: 6px 0 #e3e1e5, 12px 0 #e3e1e5, 18px 0 #e3e1e5, 24px 0 #e3e1e5;
 }
 
+.week-day[data-dots="2"]::after {
+  box-shadow: 6px 0 #b94cf1, 12px 0 #e3e1e5, 18px 0 #e3e1e5, 24px 0 #e3e1e5;
+}
+
 .week-day[data-dots="3"]::after {
   box-shadow: 6px 0 #b94cf1, 12px 0 #b94cf1, 18px 0 #e3e1e5, 24px 0 #e3e1e5;
+}
+
+.week-day[data-dots="4"]::after {
+  box-shadow: 6px 0 #b94cf1, 12px 0 #b94cf1, 18px 0 #b94cf1, 24px 0 #e3e1e5;
+}
+
+.week-day[data-dots="5"]::after {
+  box-shadow: 6px 0 #b94cf1, 12px 0 #b94cf1, 18px 0 #b94cf1, 24px 0 #b94cf1;
 }
 
 .schedule {
