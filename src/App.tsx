@@ -681,6 +681,9 @@ function ConfirmationDrawer({ open, isStatic, selectedDate, viewedPages, hiddenP
 
             <section className="important-list" aria-labelledby="important-title">
               <h2 id="important-title">Важно!</h2>
+              {sortedImportantPages.length === 0 && (
+                <p className="important-list__empty">Как здорово, все задачи решены!</p>
+              )}
               {sortedImportantPages.map((page) => (
                 <button className={viewedPages[page] ? "is-viewed" : undefined} key={page} type="button" onClick={() => openPage(page)}>
                   <Zap
