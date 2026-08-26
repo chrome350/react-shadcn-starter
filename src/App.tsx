@@ -893,7 +893,7 @@ function ConfirmationDrawer({ open, isStatic, viewedPages, hiddenPages, pendingC
 }
 
 export function App() {
-  const today = new Date(2026, 8, 22)
+  const today = new Date(2021, 8, 27)
   const todayKey = dateKey(today)
   const week = getCurrentWeek(today)
   const [selectedDay, setSelectedDay] = useState(todayKey)
