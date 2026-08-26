@@ -628,6 +628,12 @@ button { font: inherit; -webkit-tap-highlight-color: transparent; }
   overflow: hidden;
 }
 
+/* Close mirrors the slide-up open animation: same duration and easing. */
+.occupancy-info-drawer[data-closing="true"] {
+  animation: none;
+  transition: transform 0.64s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
 .occupancy-info-illustration {
   color: #e7e7e7;
   flex-direction: row;

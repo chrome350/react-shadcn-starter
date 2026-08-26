@@ -559,11 +559,16 @@ function OccupancyInfoDrawer({ open, onOpenChange }: { open: boolean; onOpenChan
   const [dragOffset, setDragOffset] = useState(0)
   const [isDragging, setIsDragging] = useState(false)
   const [hasInteracted, setHasInteracted] = useState(false)
+  const [isClosing, setIsClosing] = useState(false)
+  const contentRef = useRef<HTMLDivElement>(null)
   const dragStart = useRef(0)
   const dragStartedAt = useRef(0)
   const dragOffsetRef = useRef(0)
   const isDraggingRef = useRef(false)
   const isClosingRef = useRef(false)
+
+  // Mirror the 0.64s slide-up open animation on close.
+  const CLOSE_DURATION = 640
 
   const resetDrag = () => {
     dragOffsetRef.current = 0
@@ -572,6 +577,7 @@ function OccupancyInfoDrawer({ open, onOpenChange }: { open: boolean; onOpenChan
     setDragOffset(0)
     setIsDragging(false)
     setHasInteracted(false)
+    setIsClosing(false)
   }
 
   const animateClose = () => {
@@ -579,11 +585,14 @@ function OccupancyInfoDrawer({ open, onOpenChange }: { open: boolean; onOpenChan
     isClosingRef.current = true
     isDraggingRef.current = false
     setIsDragging(false)
-    setDragOffset(window.innerHeight)
+    setIsClosing(true)
+    // Travel exactly the sheet's own height so the close mirrors the open distance.
+    const distance = contentRef.current ? contentRef.current.offsetHeight + 24 : window.innerHeight
+    setDragOffset(distance)
     window.setTimeout(() => {
       onOpenChange(false)
       resetDrag()
-    }, 180)
+    }, CLOSE_DURATION)
   }
 
   const handleOpenChange = (nextOpen: boolean) => {
@@ -647,9 +656,11 @@ function OccupancyInfoDrawer({ open, onOpenChange }: { open: boolean; onOpenChan
       <Dialog.Portal>
         <Dialog.Overlay className="drawer-overlay occupancy-info-overlay" />
         <Dialog.Content
+          ref={contentRef}
           className="drawer-content occupancy-info-drawer"
           data-dragging={isDragging}
           data-interacted={hasInteracted}
+          data-closing={isClosing}
           style={{ "--drawer-drag-y": `${dragOffset}px` } as CSSProperties}
           onPointerDown={handleDragStart}
           onOpenAutoFocus={(event) => event.preventDefault()}
