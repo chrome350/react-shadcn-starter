@@ -819,6 +819,7 @@ export function App() {
   if (recordsPage) {
     return (
       <main className="phone-shell records-page-shell">
+        <Toaster position="bottom-center" toastOptions={{ unstyled: true, classNames: { toast: "records-toast" } }} />
         {recordsPage === "pending" ? (
           <PendingConfirmations
             confirmed={confirmedAppointments}
@@ -857,6 +858,7 @@ export function App() {
 
   return (
     <main className="phone-shell">
+      <Toaster position="bottom-center" toastOptions={{ unstyled: true, classNames: { toast: "records-toast" } }} />
       <section className="calendar-header" aria-label={`Календарь на ${monthTitle}`}>
         <div className="month-row">
           <div className="month-title">
@@ -992,8 +994,6 @@ export function App() {
       />
 
       <OccupancyInfoDrawer open={isOccupancyInfoOpen} onOpenChange={setIsOccupancyInfoOpen} />
-
-      <Toaster position="bottom-center" toastOptions={{ unstyled: true, classNames: { toast: "records-toast" } }} />
 
       <nav className="bottom-nav" aria-label="Основная навигация">
         <div className="bottom-nav__group">
