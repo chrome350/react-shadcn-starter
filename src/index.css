@@ -640,6 +640,7 @@ button { font: inherit; -webkit-tap-highlight-color: transparent; }
   align-items: center;
   height: 156px;
   display: flex;
+  padding: 16px;
 }
 
 .occupancy-info-illustration img { display: block; width: 100%; height: 100%; object-fit: contain; }
