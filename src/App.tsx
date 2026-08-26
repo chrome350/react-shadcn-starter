@@ -710,16 +710,8 @@ function ConfirmationDrawer({ open, isStatic, viewedPages, hiddenPages, pendingC
   ]
 
   const handleOpenChange = (nextOpen: boolean) => {
+    if (!nextOpen) setHasInteracted(true)
     onOpenChange(nextOpen)
-    if (!nextOpen) {
-      window.setTimeout(() => {
-        dragOffsetRef.current = 0
-        isDraggingRef.current = false
-        setDragOffset(0)
-        setIsDragging(false)
-        setHasInteracted(false)
-      }, 0)
-    }
   }
 
   const handleDragStart = (event: ReactPointerEvent<HTMLDivElement>) => {
@@ -756,13 +748,6 @@ function ConfirmationDrawer({ open, isStatic, viewedPages, hiddenPages, pendingC
         setDragOffset(window.innerHeight)
         window.setTimeout(() => {
           onOpenChange(false)
-          window.setTimeout(() => {
-            dragOffsetRef.current = 0
-            isDraggingRef.current = false
-            setDragOffset(0)
-            setIsDragging(false)
-            setHasInteracted(false)
-          }, 0)
         }, 180)
         return
       }
@@ -899,6 +884,7 @@ export function App() {
   const [recordsPage, setRecordsPage] = useState<RecordsPage | null>(null)
   const [confirmedAppointments, setConfirmedAppointments] = useState<Record<string, boolean>>({})
   const [isSummaryOpen, setIsSummaryOpen] = useState(false)
+  const [summaryDrawerInstance, setSummaryDrawerInstance] = useState(0)
   const [isSummaryStatic, setIsSummaryStatic] = useState(false)
   const [viewedRecordPages, setViewedRecordPages] = useState<ViewedRecordPages>({ pending: false, new: false, canceled: false })
   const [completedRecordPages, setCompletedRecordPages] = useState<ViewedRecordPages>({ pending: false, new: false, canceled: false })
@@ -927,6 +913,12 @@ export function App() {
   const returnToSummary = () => {
     setRecordsPage(null)
     setIsSummaryStatic(true)
+    setIsSummaryOpen(true)
+  }
+
+  const openSummary = () => {
+    setSummaryDrawerInstance((current) => current + 1)
+    setIsSummaryStatic(false)
     setIsSummaryOpen(true)
   }
 
@@ -1091,7 +1083,7 @@ export function App() {
       </section>
 
       {selectedDayIndex === 1 && (
-        <Button className="confirm-button" type="button" onClick={() => setIsSummaryOpen(true)}>
+        <Button className="confirm-button" type="button" onClick={openSummary}>
           <span className="confirm-button__icon"><Zap /></span>
           <span>Подтвердите</span>
           <span className="confirm-button__count">2 записи</span>
@@ -1099,6 +1091,7 @@ export function App() {
       )}
 
       <ConfirmationDrawer
+        key={summaryDrawerInstance}
         open={isSummaryOpen}
         isStatic={isSummaryStatic}
         viewedPages={viewedRecordPages}
@@ -1122,7 +1115,7 @@ export function App() {
             <img src="./avatar.png" alt="" />
           </Button>
         </div>
-        <Button variant="ghost" size="icon" className="nav-inbox" aria-label="Входящие" onClick={() => setIsSummaryOpen(true)}>
+        <Button variant="ghost" size="icon" className="nav-inbox" aria-label="Входящие" onClick={openSummary}>
           <InboxIcon />
         </Button>
         <Button size="icon" className="add-button" aria-label="Добавить запись">
