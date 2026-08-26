@@ -660,10 +660,18 @@ function OccupancyInfoDrawer({ open, onOpenChange }: { open: boolean; onOpenChan
     }
   }, [])
 
+  // Fade the overlay in step with how far the sheet (fixed 462px tall) has slid away.
+  const overlayOpacity = Math.max(0, 1 - dragOffset / 462)
+
   return (
     <Dialog.Root open={open} onOpenChange={handleOpenChange}>
       <Dialog.Portal>
-        <Dialog.Overlay className="drawer-overlay occupancy-info-overlay" />
+        <Dialog.Overlay
+          className="drawer-overlay occupancy-info-overlay"
+          data-dragging={isDragging}
+          data-closing={isClosing}
+          style={{ "--overlay-opacity": overlayOpacity } as CSSProperties}
+        />
         <Dialog.Content
           ref={contentRef}
           className="drawer-content occupancy-info-drawer"

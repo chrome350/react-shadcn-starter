@@ -614,7 +614,21 @@ button { font: inherit; -webkit-tap-highlight-color: transparent; }
 .progress-good { width: 80%; background: #00c85a; }
 .progress-low { width: 28%; background: #ff173d; }
 
-.occupancy-info-overlay { z-index: 32; }
+.occupancy-info-overlay {
+  z-index: 32;
+  opacity: var(--overlay-opacity, 1);
+}
+
+/* Track the sheet 1:1 while dragging, then fade out in step with the close. */
+.occupancy-info-overlay[data-dragging="true"] {
+  animation: none;
+  transition: none;
+}
+
+.occupancy-info-overlay[data-closing="true"] {
+  animation: none;
+  transition: opacity 0.64s cubic-bezier(0.32, 0.72, 0, 1);
+}
 
 .occupancy-info-drawer {
   z-index: 33;
