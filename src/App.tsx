@@ -699,19 +699,17 @@ function ConfirmationDrawer({ open, isStatic, viewedPages, hiddenPages, pendingC
     ...visibleImportantPages.filter((page) => viewedPages[page]),
   ]
 
-  const resetDrag = () => {
-    dragOffsetRef.current = 0
-    isDraggingRef.current = false
-    setDragOffset(0)
-    setIsDragging(false)
-    setHasInteracted(false)
-  }
-
   const handleOpenChange = (nextOpen: boolean) => {
-    if (!nextOpen) {
-      resetDrag()
-    }
     onOpenChange(nextOpen)
+    if (!nextOpen) {
+      window.setTimeout(() => {
+        dragOffsetRef.current = 0
+        isDraggingRef.current = false
+        setDragOffset(0)
+        setIsDragging(false)
+        setHasInteracted(false)
+      }, 0)
+    }
   }
 
   const handleDragStart = (event: ReactPointerEvent<HTMLDivElement>) => {
@@ -748,7 +746,13 @@ function ConfirmationDrawer({ open, isStatic, viewedPages, hiddenPages, pendingC
         setDragOffset(window.innerHeight)
         window.setTimeout(() => {
           onOpenChange(false)
-          resetDrag()
+          window.setTimeout(() => {
+            dragOffsetRef.current = 0
+            isDraggingRef.current = false
+            setDragOffset(0)
+            setIsDragging(false)
+            setHasInteracted(false)
+          }, 0)
         }, 180)
         return
       }
