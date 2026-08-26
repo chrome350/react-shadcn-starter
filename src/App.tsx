@@ -191,7 +191,6 @@ function BreakCard() {
         <strong>Перерыв</strong>
       </div>
       <p className="appointment__meta">15:00–16:00 · 1 час</p>
-      <p className="appointment__note">Коментарий который оставил мастер</p>
     </article>
   )
 }
