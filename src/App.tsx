@@ -672,7 +672,7 @@ function OccupancyInfoDrawer({ open, onOpenChange }: { open: boolean; onOpenChan
   )
 }
 
-function ConfirmationDrawer({ open, isStatic, selectedDate, viewedPages, hiddenPages, pendingCount, newCount, onOpenChange, onOpenPage, onMarkUnread, onOpenOccupancy }: { open: boolean; isStatic: boolean; selectedDate: Date; viewedPages: ViewedRecordPages; hiddenPages: ViewedRecordPages; pendingCount: number; newCount: number; onOpenChange: (open: boolean) => void; onOpenPage: (page: RecordsPage) => void; onMarkUnread: (page: RecordsPage) => void; onOpenOccupancy: () => void }) {
+function ConfirmationDrawer({ open, isStatic, viewedPages, hiddenPages, pendingCount, newCount, onOpenChange, onOpenPage, onMarkUnread, onOpenOccupancy }: { open: boolean; isStatic: boolean; viewedPages: ViewedRecordPages; hiddenPages: ViewedRecordPages; pendingCount: number; newCount: number; onOpenChange: (open: boolean) => void; onOpenPage: (page: RecordsPage) => void; onMarkUnread: (page: RecordsPage) => void; onOpenOccupancy: () => void }) {
   const [dragOffset, setDragOffset] = useState(0)
   const [isDragging, setIsDragging] = useState(false)
   const [hasInteracted, setHasInteracted] = useState(false)
@@ -680,8 +680,8 @@ function ConfirmationDrawer({ open, isStatic, selectedDate, viewedPages, hiddenP
   const dragStartedAt = useRef(0)
   const dragOffsetRef = useRef(0)
   const isDraggingRef = useRef(false)
-  const weekday = new Intl.DateTimeFormat("ru-RU", { weekday: "long" }).format(selectedDate).toUpperCase()
-  const date = new Intl.DateTimeFormat("ru-RU", { day: "numeric", month: "long" }).format(selectedDate)
+  const weekday = "ПОНЕДЕЛЬНИК"
+  const date = "27 сентября"
   const visibleImportantPages = importantPageOrder.filter((page) => !hiddenPages[page])
   const sortedImportantPages = [
     ...visibleImportantPages.filter((page) => !viewedPages[page]),
@@ -1078,7 +1078,6 @@ export function App() {
       <ConfirmationDrawer
         open={isSummaryOpen}
         isStatic={isSummaryStatic}
-        selectedDate={selectedDate}
         viewedPages={viewedRecordPages}
         hiddenPages={hiddenRecordPages}
         pendingCount={pendingAppointmentsCount}
