@@ -201,6 +201,7 @@ function AppointmentDetailsDrawer({ trigger, status, details = defaultAppointmen
   const [comment, setComment] = useState(details.comment ?? "")
   const [dragOffset, setDragOffset] = useState(0)
   const [isDragging, setIsDragging] = useState(false)
+  const [hasInteracted, setHasInteracted] = useState(false)
   const dragStart = useRef(0)
   const dragStartedAt = useRef(0)
   const dragOffsetRef = useRef(0)
@@ -217,6 +218,7 @@ function AppointmentDetailsDrawer({ trigger, status, details = defaultAppointmen
     isDraggingRef.current = false
     setDragOffset(0)
     setIsDragging(false)
+    setHasInteracted(false)
   }
 
   const handleOpenChange = (nextOpen: boolean) => {
@@ -230,6 +232,12 @@ function AppointmentDetailsDrawer({ trigger, status, details = defaultAppointmen
     dragOffsetRef.current = 0
     isDraggingRef.current = true
     setIsDragging(true)
+    setHasInteracted(true)
+    try {
+      event.currentTarget.setPointerCapture(event.pointerId)
+    } catch {
+      // pointer capture is a progressive enhancement; ignore if unsupported
+    }
     event.preventDefault()
   }
 
@@ -252,8 +260,7 @@ function AppointmentDetailsDrawer({ trigger, status, details = defaultAppointmen
         setDragOffset(window.innerHeight)
         window.setTimeout(() => {
           setOpen(false)
-          dragOffsetRef.current = 0
-          setDragOffset(0)
+          resetDrag()
         }, 180)
         return
       }
@@ -280,10 +287,13 @@ function AppointmentDetailsDrawer({ trigger, status, details = defaultAppointmen
         <Dialog.Content
           className="drawer-content appointment-detail-drawer"
           data-dragging={isDragging}
+          data-interacted={hasInteracted}
           style={{ "--drawer-drag-y": `${dragOffset}px` } as CSSProperties}
           onOpenAutoFocus={(event) => event.preventDefault()}
         >
-          <div className="drawer-handle" aria-hidden="true" onPointerDown={handleDragStart} />
+          <div className="drawer-handle-area" aria-hidden="true" onPointerDown={handleDragStart}>
+            <span className="drawer-handle" />
+          </div>
           <Dialog.Description className="sr-only">Подробная информация о записи клиента</Dialog.Description>
 
           <div className="drawer-scroll-area">
@@ -662,10 +672,11 @@ function OccupancyInfoDrawer({ open, onOpenChange }: { open: boolean; onOpenChan
           data-interacted={hasInteracted}
           data-closing={isClosing}
           style={{ "--drawer-drag-y": `${dragOffset}px` } as CSSProperties}
-          onPointerDown={handleDragStart}
           onOpenAutoFocus={(event) => event.preventDefault()}
         >
-          <div className="drawer-handle" aria-hidden="true" />
+          <div className="drawer-handle-area" aria-hidden="true" onPointerDown={handleDragStart}>
+            <span className="drawer-handle" />
+          </div>
 
           <div className="occupancy-info-illustration" aria-hidden="true">
             <img src="./occupancy-info.svg" alt="" />
@@ -784,11 +795,9 @@ function ConfirmationDrawer({ open, isStatic, viewedPages, hiddenPages, pendingC
           style={{ "--drawer-drag-y": `${dragOffset}px` } as CSSProperties}
           onOpenAutoFocus={(event) => event.preventDefault()}
         >
-          <div
-            className="drawer-handle"
-            aria-hidden="true"
-            onPointerDown={handleDragStart}
-          />
+          <div className="drawer-handle-area" aria-hidden="true" onPointerDown={handleDragStart}>
+            <span className="drawer-handle" />
+          </div>
           <Dialog.Description className="sr-only">
             Сводка записей, важные уведомления и советы
           </Dialog.Description>

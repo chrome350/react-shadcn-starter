@@ -496,29 +496,30 @@ button { font: inherit; -webkit-tap-highlight-color: transparent; }
 
 .drawer-scroll-area::-webkit-scrollbar { display: none; }
 
-.drawer-handle {
+/* Full-width grab strip along the top edge — swipe the sheet from anywhere here. */
+.drawer-handle-area {
   position: absolute;
-  top: 4px;
-  left: 50%;
-  width: 34px;
-  height: 10px;
-  transform: translateX(-50%);
+  top: 0;
+  left: 0;
+  z-index: 3;
+  width: 100%;
+  height: 44px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
   cursor: grab;
   touch-action: none;
 }
 
-.drawer-handle:active { cursor: grabbing; }
+.drawer-handle-area:active { cursor: grabbing; }
 
-.drawer-handle::before {
-  content: "";
-  position: absolute;
-  left: 0;
+.drawer-handle {
   width: 34px;
   height: 3px;
+  margin-top: 4px;
   border-radius: 999px;
+  background: #c9c7ca;
 }
-
-.drawer-handle::before { top: 0; background: #c9c7ca; }
 
 .appointment-detail-drawer {
   background: linear-gradient(#faecff 0%, #f5f3f7 100%);
