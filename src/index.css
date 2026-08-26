@@ -635,7 +635,7 @@ button { font: inherit; -webkit-tap-highlight-color: transparent; }
   display: flex;
 }
 
-.occupancy-info-illustration svg { display: block; width: 100%; height: 100%; }
+.occupancy-info-illustration img { display: block; width: 100%; height: 100%; object-fit: contain; }
 .occupancy-info-copy { margin-top: 6px; }
 .occupancy-info-copy h2 { letter-spacing: -0.5px; margin: 0; font-size: 21px; font-weight: 700; line-height: 26px; }
 .occupancy-info-copy p { color: #7d7a7f; margin: 14px 0 0; font-size: 17px; line-height: 22px; }
