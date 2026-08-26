@@ -657,12 +657,7 @@ function OccupancyInfoDrawer({ open, onOpenChange }: { open: boolean; onOpenChan
           <div className="drawer-handle" aria-hidden="true" />
 
           <div className="occupancy-info-illustration" aria-hidden="true">
-            <svg viewBox="0 0 180 180">
-              <circle cx="79" cy="96" r="54" fill="none" stroke="currentColor" strokeWidth="20" strokeDasharray="250 90" transform="rotate(-78 79 96)" />
-              <circle cx="65" cy="79" r="13" fill="currentColor" />
-              <path d="M40 132 88 85a12 12 0 0 1 17 0l31 31a60 60 0 0 1-96 16Z" fill="currentColor" />
-              <path d="M130 22c5 18 10 23 28 28-18 5-23 10-28 28-5-18-10-23-28-28 18-5 23-10 28-28Z" fill="currentColor" />
-            </svg>
+            <img src="./occupancy-info.svg" alt="" />
           </div>
 
           <div className="occupancy-info-copy">
