@@ -461,6 +461,9 @@ button { font: inherit; -webkit-tap-highlight-color: transparent; }
   padding: 24px 12px 24px;
   transition: transform .18s ease-out;
   animation: .64s cubic-bezier(.32, .72, 0, 1) drawer-slide-up;
+  /* Keep the sheet on its own compositor layer so dragging stays smooth even
+     when opened statically (isStatic), where no animation promotes the layer. */
+  will-change: transform;
   position: fixed;
   bottom: 0;
   left: 50%;
