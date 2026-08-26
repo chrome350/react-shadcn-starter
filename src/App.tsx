@@ -558,6 +558,7 @@ function CanceledAppointments({ deleted, onBack, onDelete, onDeleteAll }: { dele
 function OccupancyInfoDrawer({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
   const [dragOffset, setDragOffset] = useState(0)
   const [isDragging, setIsDragging] = useState(false)
+  const [hasInteracted, setHasInteracted] = useState(false)
   const dragStart = useRef(0)
   const dragStartedAt = useRef(0)
   const dragOffsetRef = useRef(0)
@@ -570,6 +571,7 @@ function OccupancyInfoDrawer({ open, onOpenChange }: { open: boolean; onOpenChan
     isClosingRef.current = false
     setDragOffset(0)
     setIsDragging(false)
+    setHasInteracted(false)
   }
 
   const animateClose = () => {
@@ -597,6 +599,12 @@ function OccupancyInfoDrawer({ open, onOpenChange }: { open: boolean; onOpenChan
     dragOffsetRef.current = 0
     isDraggingRef.current = true
     setIsDragging(true)
+    setHasInteracted(true)
+    try {
+      event.currentTarget.setPointerCapture(event.pointerId)
+    } catch {
+      // pointer capture is a progressive enhancement; ignore if unsupported
+    }
     event.preventDefault()
   }
 
@@ -641,6 +649,7 @@ function OccupancyInfoDrawer({ open, onOpenChange }: { open: boolean; onOpenChan
         <Dialog.Content
           className="drawer-content occupancy-info-drawer"
           data-dragging={isDragging}
+          data-interacted={hasInteracted}
           style={{ "--drawer-drag-y": `${dragOffset}px` } as CSSProperties}
           onPointerDown={handleDragStart}
           onOpenAutoFocus={(event) => event.preventDefault()}
@@ -671,6 +680,7 @@ function OccupancyInfoDrawer({ open, onOpenChange }: { open: boolean; onOpenChan
 function ConfirmationDrawer({ open, isStatic, selectedDate, viewedPages, hiddenPages, pendingCount, newCount, onOpenChange, onOpenPage, onMarkUnread, onOpenOccupancy }: { open: boolean; isStatic: boolean; selectedDate: Date; viewedPages: ViewedRecordPages; hiddenPages: ViewedRecordPages; pendingCount: number; newCount: number; onOpenChange: (open: boolean) => void; onOpenPage: (page: RecordsPage) => void; onMarkUnread: (page: RecordsPage) => void; onOpenOccupancy: () => void }) {
   const [dragOffset, setDragOffset] = useState(0)
   const [isDragging, setIsDragging] = useState(false)
+  const [hasInteracted, setHasInteracted] = useState(false)
   const dragStart = useRef(0)
   const dragStartedAt = useRef(0)
   const dragOffsetRef = useRef(0)
@@ -688,6 +698,7 @@ function ConfirmationDrawer({ open, isStatic, selectedDate, viewedPages, hiddenP
     isDraggingRef.current = false
     setDragOffset(0)
     setIsDragging(false)
+    setHasInteracted(false)
   }
 
   const handleOpenChange = (nextOpen: boolean) => {
@@ -703,6 +714,12 @@ function ConfirmationDrawer({ open, isStatic, selectedDate, viewedPages, hiddenP
     dragOffsetRef.current = 0
     isDraggingRef.current = true
     setIsDragging(true)
+    setHasInteracted(true)
+    try {
+      event.currentTarget.setPointerCapture(event.pointerId)
+    } catch {
+      // pointer capture is a progressive enhancement; ignore if unsupported
+    }
     event.preventDefault()
   }
 
@@ -725,8 +742,7 @@ function ConfirmationDrawer({ open, isStatic, selectedDate, viewedPages, hiddenP
         setDragOffset(window.innerHeight)
         window.setTimeout(() => {
           onOpenChange(false)
-          dragOffsetRef.current = 0
-          setDragOffset(0)
+          resetDrag()
         }, 180)
         return
       }
@@ -758,6 +774,7 @@ function ConfirmationDrawer({ open, isStatic, selectedDate, viewedPages, hiddenP
           className="drawer-content"
           data-dragging={isDragging}
           data-static={isStatic}
+          data-interacted={hasInteracted}
           style={{ "--drawer-drag-y": `${dragOffset}px` } as CSSProperties}
           onOpenAutoFocus={(event) => event.preventDefault()}
         >
